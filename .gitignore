@@ -83,3 +83,4 @@ testIntegration/package-lock.json
 src/@commerce-apps
 
 apis-dotnet
+src/__node_modules__

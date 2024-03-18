@@ -1,111 +1,88 @@
-/*
- * Copyright (c) 2022, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
- */
+namespace SFCC.Core;
 
-import type { OperationOptions } from "retry";
-import { Response, ClientConfig } from "@commerce-apps/core";
-import type { RequestInit } from "node-fetch";
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-type LoginRequest = {
-  client_id?: string;
-  response_type?: string;
-  redirect_uri: string;
-  state?: string;
-  scope?: string;
-  usid?: string;
-  channel_id: string;
-  code_challenge?: string;
-} & { [key: string]: any };
+// public class OperationOptions { /* ... */ }
+public class Response { /* ... */ }
+// public class RequestInit { /* ... */ }
 
-export type TokenRequest = {
-  refresh_token?: string;
-  code?: string;
-  usid?: string;
-  grant_type: string;
-  redirect_uri?: string;
-  code_verifier?: string;
-  client_id?: string;
-  channel_id?: string;
-} & { [key: string]: any };
+public class LoginRequest
+{
+    public required string client_id { get; set; }
+    public required string response_type { get; set; }
+    public required string redirect_uri { get; set; }
+    public required string state { get; set; }
+    public required string scope { get; set; }
+    public required string usid { get; set; }
+    public required string channel_id { get; set; }
+    public required string code_challenge { get; set; }
+    public required Dictionary<string, object> AdditionalData { get; set; }
+}
 
-export type TokenResponse = {
-  access_token: string;
-  id_token: string;
-  refresh_token: string;
-  expires_in: number;
-  token_type: string;
-  usid: string;
-  customer_id: string;
-  enc_user_id: string;
-  idp_access_token: string;
-} & { [key: string]: any };
+public class TokenRequest
+{
+    public required string refresh_token { get; set; }
+    public required string code { get; set; }
+    public required string usid { get; set; }
+    public required string grant_type { get; set; }
+    public required string redirect_uri { get; set; }
+    public required string code_verifier { get; set; }
+    public required string client_id { get; set; }
+    public required string channel_id { get; set; }
+    public required Dictionary<string, object> AdditionalData { get; set; }
+}
 
-// prefix interface with I
-export interface ISlasClient {
-  authenticateCustomer(
-    options: {
-      parameters?: {
-        organizationId?: string;
-      } & { [key in `c_${string}`]: any };
-      retrySettings?: OperationOptions;
-      headers?: { [key: string]: string };
-      fetchOptions?: RequestInit;
-      body: LoginRequest;
-    },
-    rawResponse?: boolean
-  ): Promise<Response | void>;
+public class TokenResponse
+{
+    public required string access_token { get; set; }
+    public required string id_token { get; set; }
+    public required string refresh_token { get; set; }
+    public int expires_in { get; set; }
+    public required string token_type { get; set; }
+    public required string usid { get; set; }
+    public required string customer_id { get; set; }
+    public required string enc_user_id { get; set; }
+    public required string idp_access_token { get; set; }
+    public required Dictionary<string, object> AdditionalData { get; set; }
+}
 
-  authorizeCustomer(
-    options?: {
-      parameters?: {
-        organizationId?: string;
-        redirect_uri: string;
-        response_type: string;
-        client_id: string;
-        scope?: string;
-        state?: string;
-        usid?: string;
-        hint?: string;
-        channel_id?: string;
-        code_challenge: string;
-      } & { [key in `c_${string}`]: any };
-      retrySettings?: OperationOptions;
-      fetchOptions?: RequestInit;
-      headers?: { [key: string]: string };
-    },
-    rawResponse?: boolean
-  ): Promise<Response | void>;
+public interface ISlasClient
+{
+    Task<Response> AuthenticateCustomer(
+        Dictionary<string, object> parameters,
+        // OperationOptions retrySettings,
+        Dictionary<string, string> headers,
+        // RequestInit fetchOptions,
+        LoginRequest body,
+        bool rawResponse
+    );
 
-  getAccessToken(
-    options: {
-      parameters?: {
-        organizationId?: string;
-      } & { [key in `c_${string}`]: any };
-      retrySettings?: OperationOptions;
-      fetchOptions?: RequestInit;
-      headers?: { [key: string]: string };
-      body: TokenRequest;
-    },
-    rawResponse?: boolean
-  ): Promise<Response | TokenResponse>;
+    Task<Response> AuthorizeCustomer(
+        Dictionary<string, object> parameters,
+        // OperationOptions retrySettings,
+        Dictionary<string, string> headers,
+        // RequestInit fetchOptions,
+        bool rawResponse
+    );
 
-  logoutCustomer(
-    options?: {
-      parameters?: {
-        organizationId?: string;
-        client_id: string;
-        refresh_token: string;
-        channel_id?: string;
-      } & { [key in `c_${string}`]: any };
-      retrySettings?: OperationOptions;
-      fetchOptions?: RequestInit;
-      headers?: { [key: string]: string };
-    },
-    rawResponse?: boolean
-  ): Promise<Response | TokenResponse>;
+    Task<object> GetAccessToken(
+        Dictionary<string, object> parameters,
+        // OperationOptions retrySettings,
+        Dictionary<string, string> headers,
+        // RequestInit fetchOptions,
+        TokenRequest body,
+        bool rawResponse
+    );
 
-  clientConfig: ClientConfig;
+    Task<object> LogoutCustomer(
+        Dictionary<string, object> parameters,
+        // OperationOptions retrySettings,
+        Dictionary<string, string> headers,
+        // RequestInit fetchOptions,
+        bool rawResponse
+    );
+
+    ClientConfig ClientConfig { get; set; }
 }
