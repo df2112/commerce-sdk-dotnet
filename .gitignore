@@ -80,3 +80,4 @@ reports*
 
 #Not committing this, not needed and causes issues with circleCI
 testIntegration/package-lock.json
+src/@commerce-apps
