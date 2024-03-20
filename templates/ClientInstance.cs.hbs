@@ -1,3 +1,8 @@
+// *****************************************************************************************
+// 
+// templates/clientInstance.*.hbs
+//
+// *****************************************************************************************
 
 import {
   BaseClient,
@@ -11,8 +16,8 @@ import {
 import type { OperationOptions } from "retry";
 import type { RequestInit } from "node-fetch";
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace {{name.upperCamelCase}} {
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
+{
   {{#each dataTypes}}
   {{!-- TODO: Remove this special case handling once namespaced types are added --}}
       {{#if (eq (getValue name) "ResourceBadRequest")}}
@@ -20,17 +25,19 @@ export namespace {{name.upperCamelCase}} {
           // the SDK generation. The full definition will be included in the next major release.
           export type ResourceBadRequest = { [key: string]: any };
       {{else if (or (isTypeDefinition this) (isArrayType this))}}
-  export type {{getValue name}} = {{> dtoPartial typeDto=this}}
+  {{!-- public record1 {{getValue name}}  --}}
+  {{> dtoPartial-cs typeDto=this}}
       {{/if}}
       {{!-- Traits are internal types and do not need to be exported --}}
       {{#if (isTraitDefinition this)}}
         {{#if (isAllowedTrait this) }}
-  type {{getValue name}} = {{> dtoPartial typeDto=this}}
+  {{> dtoPartial-cs typeDto=this}}
         {{else}}
         {{log "Cannot convert invalid trait to type:" (getValue name) lavel="warn"}}
         {{/if}}
       {{/if}}
   {{/each}}
+
 }
 
 const USER_AGENT_HEADER = "user-agent";
@@ -81,18 +88,23 @@ const USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}};"
 * @beta 
 * {{/if}}
 * 
-
 */
-export class {{name.upperCamelCase}} extends BaseClient {
-  constructor(config: ClientConfig) {
-    super(config);
 
-    if (!!!config.baseUri) {
-      this.clientConfig.baseUri = "{{getBaseUriFromDocument model}}";
+
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
+{
+    public class {{name.upperCamelCase}} : BaseClient 
+    {
+        constructor(config: ClientConfig) {
+        super(config);
+
+        if (!!!config.baseUri) {
+            this.clientConfig.baseUri = "{{getBaseUriFromDocument model}}";
+        }
+
+        }
+
+        {{> operationsPartial-cs}}
+
     }
-
-  }
-
-  {{> operationsPartial-cs}}
-
 }

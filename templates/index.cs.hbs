@@ -1,3 +1,11 @@
+// *****************************************************************************************
+// 
+// templates/index.*.hbs
+// 
+// It runs at the root folder (ie apis-dotnet/customer) so the 'children' are the subfolders
+//
+// *****************************************************************************************
+
 {{#each children}}
 import * as {{name.upperCamelCase}} from "./{{name.lowerCamelCase}}/{{name.lowerCamelCase}}";
 {{/each}}

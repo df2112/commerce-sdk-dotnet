@@ -1,16 +1,22 @@
+
+// *****************************************************************************************
+// 
+// templates/dtoPartial.*.hbs
+//
+// *****************************************************************************************
 {{#if (isArrayType typeDto)}}
 {{{getDataType typeDto}}};
 {{else}}
-{
+public record {{getValue typeDto.name}}(
 {{#each (getProperties typeDto)}}
 {{#if (isRequiredProperty this)}}
-  {{{getValue name}}}: {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}};
+  {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}} {{{getValue name}}},
 {{else if (isOptionalProperty this)}}
-  {{{getValue name}}}?: {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}};
+  {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}?{{/or}} {{{getValue name}}}, 
 {{/if}}
 {{/each}}
-}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
- & { [key: string]: any }
+  Dictionary<string, string> AdditionalProperties
 {{/if}}
+);
 {{/if}}
