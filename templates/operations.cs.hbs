@@ -32,6 +32,8 @@
     * @beta
     * {{/if}}
     */ --}}
+
+    // DAVE TODO
     {{name}}(
       options{{#or (is method "get") (is method "delete")}}?{{/or}}: {
         parameters?: {
@@ -112,6 +114,7 @@
           }
       }
 
+      // DAVE TODO
       const headers = mergeHeaders(getHeaders(options), {
         {{#if (isRequestWithPayload request)}}
         "Content-Type": "{{{getMediaTypeFromRequest request}}}",
@@ -119,6 +122,7 @@
         [USER_AGENT_HEADER]: USER_AGENT_VALUE
       });
 
+      // DAVE TODO
       return StaticClient.{{method}}({
         client: this,
         rawResponse: rawResponse,
