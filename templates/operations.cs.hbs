@@ -53,6 +53,9 @@
       var optionParams = options?.Parameters ?? new Dictionary<string, string>();
       var configParams = this.ClientConfig.Parameters;
 
+      //
+      // Path parameters
+      //
       Dictionary<string, string> pathParams = new Dictionary<string, string>();
 
       {{#each ../parameters}}
@@ -67,31 +70,47 @@
           pathParams["{{{name}}}"] = configParams["{{{name}}}"];
       } 
       {{/if}}
-      {{/each}}
+      {{/each}}     
 
-
-      const queryParams: Partial<{ [key in `c_${string}`]: any }> = {};
-
+      //
+      // Query parameters - Standard
+      //
+      Dictionary<string, object> queryParams = new Dictionary<string, object>();
+      
       {{#each request.queryParameters}}
-      if (optionParams["{{{name}}}"] !== undefined) {
-        queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
-      } else if (configParams["{{{name}}}"] !== undefined) {
-        queryParams["{{{name}}}"] = configParams["{{{name}}}"];
+      if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+      {
+          queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
+      }
+      else if (configParams.ContainsKey("{{{name}}}") && configParams["{{{name}}}"] != null)
+      {
+          queryParams["{{{name}}}"] = configParams["{{{name}}}"];
       }
       {{#if (is required "true")}}
-      else {
-        throw new Error('Missing required query parameter: {{{name}}}');
+      else
+      {
+          throw new Exception("Missing required query parameter: {{{name}}}");
       }
       {{/if}}
+      {{#unless @last}}
+
+      {{/unless}}
       {{/each}}
 
-      Object.keys(optionParams).forEach((key) => {
-        if(key.startsWith('c_') && optionParams[key] !== undefined) {
-          queryParams[key] = optionParams[key]
-        } else if(!queryParams.hasOwnProperty(key) && !pathParams.hasOwnProperty(key)) {
-          console.warn(`Invalid Parameter: ${key}`)
-        }
-      })
+      //
+      // Query parameters - Custom
+      //
+      foreach (var key in optionParams.Keys)
+      {
+          if (key.StartsWith("c_") && optionParams[key] != null)
+          {
+              queryParams[key] = optionParams[key];
+          }
+          else if (!queryParams.ContainsKey(key) && !pathParams.ContainsKey(key))
+          {
+              Console.WriteLine($"Invalid Parameter: {key}");
+          }
+      }
 
       const headers = mergeHeaders(getHeaders(options), {
         {{#if (isRequestWithPayload request)}}
