@@ -44,12 +44,12 @@ export function registerPartials(): void {
     path.join(TEMPLATE_DIRECTORY, "dtoPartial.ts.hbs")
   );
   generate.registerPartial(
-    "dtoPartial-cs",
-    path.join(TEMPLATE_DIRECTORY, "dtoPartial.cs.hbs")
-  );
-  generate.registerPartial(
     "operationsPartial",
     path.join(TEMPLATE_DIRECTORY, "operations.ts.hbs")
+  );
+  generate.registerPartial(
+    "dtoPartial-cs",
+    path.join(TEMPLATE_DIRECTORY, "dtoPartial.cs.hbs")
   );
   generate.registerPartial(
     "operationsPartial-cs",
