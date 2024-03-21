@@ -11,9 +11,9 @@ public record {{getValue typeDto.name}}
 (
 {{#each (getProperties typeDto)}}
 {{#if (isRequiredProperty this)}}
-    {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}} {{{getValue name}}},
+    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}{{/or}} {{{getValue name}}},
 {{else if (isOptionalProperty this)}}
-    {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromProperty this}}}?{{/or}} {{{getValue name}}}, 
+    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}?{{/or}} {{{getValue name}}}, 
 {{/if}}
 {{/each}}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
