@@ -47,14 +47,6 @@ export function registerPartials(): void {
     "operationsPartial",
     path.join(TEMPLATE_DIRECTORY, "operations.ts.hbs")
   );
-  generate.registerPartial(
-    "dtoPartial-cs",
-    path.join(TEMPLATE_DIRECTORY, "dtoPartial.cs.hbs")
-  );
-  generate.registerPartial(
-    "operationsPartial-cs",
-    path.join(TEMPLATE_DIRECTORY, "operations.cs.hbs")
-  );
 }
 
 function addTemplates(
@@ -65,10 +57,6 @@ function addTemplates(
     path.join(TEMPLATE_DIRECTORY, "index.ts.hbs"),
     path.join(outputBasePath, "index.ts")
   );
-  // apis.addTemplate(
-  //   path.join(TEMPLATE_DIRECTORY, "index.cs.hbs"),
-  //   path.join(outputBasePath, "index.cs")
-  // );
 
   const helperTemplateFileNames = ["index", "shopperCustomer"];
   helperTemplateFileNames.forEach((name: string) => {
@@ -76,13 +64,6 @@ function addTemplates(
       path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.ts.hbs`),
       path.join(outputBasePath, "helpers", `${name}.ts`)
     );
-
-    if (name === "shopperCustomer") {
-      apis.addTemplate(
-        path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.cs.hbs`),
-        path.join(outputBasePath, "helpers", `${name}.cs`)
-      );
-    }
   });
 
   apis.children.forEach((child: generate.ApiMetadata) => {
@@ -94,14 +75,6 @@ function addTemplates(
         `${child.name.lowerCamelCase}.ts`
       )
     );
-    // child.addTemplate(
-    //   path.join(TEMPLATE_DIRECTORY, "apiFamily.cs.hbs"),
-    //   path.join(
-    //     outputBasePath,
-    //     child.name.lowerCamelCase,
-    //     `${child.name.lowerCamelCase}.cs`
-    //   )
-    // );
     child.children.forEach(async (api) => {
       api.addTemplate(
         path.join(TEMPLATE_DIRECTORY, "ClientInstance.ts.hbs"),
@@ -110,15 +83,6 @@ function addTemplates(
           child.name.lowerCamelCase,
           api.name.lowerCamelCase,
           `${api.name.lowerCamelCase}.ts`
-        )
-      );
-      api.addTemplate(
-        path.join(TEMPLATE_DIRECTORY, "ClientInstance.cs.hbs"),
-        path.join(
-          outputBasePath,
-          child.name.lowerCamelCase,
-          api.name.lowerCamelCase,
-          `${api.name.lowerCamelCase}.cs`
         )
       );
     });
