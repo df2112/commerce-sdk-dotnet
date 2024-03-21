@@ -20,6 +20,7 @@
   "scripts": {
     "backupApis": "rm -rf updateApisTmp && mkdir updateApisTmp && mv apis updateApisTmp/oldApis",
     "build": "npm run clean && npm run renderTemplates && tsc && eslint dist --ext .ts,.js --quiet --fix",
+    "buildC#": "npm run clean && npm run renderTemplates",
     "clean": "rm -rf renderedTemplates dist",
     "depcheck": "depcheck",
     "diffApis": "raml-toolkit diff --dir updateApisTmp/oldApis apis -f console -o updateApisTmp/ramlDiff.txt",
