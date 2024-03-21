@@ -7,17 +7,17 @@
 {{#if (isArrayType typeDto)}}
 {{{getDataType typeDto}}};
 {{else}}
-public record {{getValue typeDto.name}}
-(
+public class {{getValue typeDto.name}}
+{
 {{#each (getProperties typeDto)}}
 {{#if (isRequiredProperty this)}}
-    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}{{/or}} {{{getValue name}}},
+    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public {{{getTypeFromPropertyCSharp this}}}{{/or}} {{{getValue name}}} { get; init; }
 {{else if (isOptionalProperty this)}}
-    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}?{{/or}} {{{getValue name}}}, 
+    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public {{{getTypeFromPropertyCSharp this}}}?{{/or}} {{{getValue name}}} { get; init; } 
 {{/if}}
 {{/each}}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
-    Dictionary<string, string> AdditionalProperties
+    public Dictionary<string, string> AdditionalProperties { get; init; }
 {{/if}}
-);
+}
 {{/if}}
