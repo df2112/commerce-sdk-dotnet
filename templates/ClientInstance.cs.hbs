@@ -4,11 +4,41 @@
 //
 // *****************************************************************************************
 
+using System.Collections.Generic;
 using Salesforce.CommerceCloud.Core;
 using Salesforce.CommerceCloud.WhateverElse;
 
 namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
-{   
+{
+    // DAVE TODO - THIS PROBABLY BELONGS IN STATICCLIENT.CS
+    public static class StaticClientX
+    {
+        public static Dictionary<string, string> GetHeaders(Options options)
+        {
+            return options?.Headers ?? new Dictionary<string, string>();
+        }
+        
+        public static Dictionary<string, string> MergeHeaders(params Dictionary<string, string>[] allHeaders)
+        {
+            var merged = new Dictionary<string, string>();
+            foreach (var headers in allHeaders)
+            {
+                foreach (var header in headers)
+                {
+                    if (merged.ContainsKey(header.Key))
+                    {
+                        merged[header.Key] = $"{merged[header.Key]}, {header.Value}";
+                    }
+                    else
+                    {
+                        merged[header.Key] = header.Value;
+                    }
+                }
+            }
+            return merged;
+        }
+    }
+
     // DAVE TODO - THIS STUFF IS DUPLICATED ALL OVER THE PLACE
     public record Parameters
     {

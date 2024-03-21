@@ -96,13 +96,16 @@
             }
         }
 
-        // DAVE TODO
-        const headers = mergeHeaders(getHeaders(options), {
-          {{#if (isRequestWithPayload request)}}
-          "Content-Type": "{{{getMediaTypeFromRequest request}}}",
-          {{/if}}
-          [USER_AGENT_HEADER]: USER_AGENT_VALUE
-        });
+        //
+        // Headers
+        //
+        var baseHeaders = StaticClientX.GetHeaders(options);
+        var additionalHeaders = new Dictionary<string, string>();
+        additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
+        {{#if (isRequestWithPayload request)}}
+        additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
+        {{/if}}
+        var mergedHeaders = StaticClientX.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
 
         // DAVE TODO
         return StaticClient.{{method}}({
@@ -112,7 +115,7 @@
           pathParameters: pathParams,
           queryParameters: queryParams,
           retrySettings: (options || {}).retrySettings,
-          headers: headers{{#or (is method "patch") (is method "post") (is method "put")}}, 
+          headers: mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
           body: (options || {}).body{{/or}},
           ...(options.fetchOptions && { fetchOptions: options.fetchOptions })
         });
