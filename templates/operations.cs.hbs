@@ -33,45 +33,6 @@
     * {{/if}}
     */ --}}
 
-    // DAVE TODO - THIS STUFF IS DUPLICATED ALL OVER THE PLACE
-    public record Parameters
-    {
-        public string OrganizationId { get; set; }
-        // Add other parameters here as needed
-        public Dictionary<string, string> AdditionalProperties { get; set; }
-    }
-
-    public record OperationOptions
-    {
-        // Add fields here as needed
-    }
-
-    public record RequestInit
-    {
-        // Add fields here as needed
-    }
-
-    public record LoginRequest
-    {
-        // Add fields here as needed
-    }
-
-    public record Options
-    {
-        public Parameters Parameters { get; set; }
-        public OperationOptions RetrySettings { get; set; }
-        public RequestInit FetchOptions { get; set; }
-        public Dictionary<string, string> Headers { get; set; }
-        {{#or (is method "patch") (is method "post") (is method "put")}}
-        public LoginRequest Body { get; set; }
-        {{/or}}
-    }
-
-    public record Response
-    {
-        // Add fields here as needed
-    }
-
     public async Task<Response | {{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}}> {{name}}(Options options, bool? rawResponse = null)
     {
         var optionParams = options?.Parameters ?? new Dictionary<string, string>();
