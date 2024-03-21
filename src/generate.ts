@@ -11,7 +11,7 @@ import { registerHelpers, registerPartials, setupApis } from "./lib/utils";
 import { copySync } from "fs-extra";
 
 const API_DIRECTORY = path.resolve(
-  process.env.COMMERCE_SDK_INPUT_DIR || `${__dirname}/../apis-dotnet`
+  process.env.COMMERCE_SDK_INPUT_DIR || `${__dirname}/../apis`
 );
 
 const OUTPUT_DIRECTORY = path.join(__dirname, "../renderedTemplates/helpers");
