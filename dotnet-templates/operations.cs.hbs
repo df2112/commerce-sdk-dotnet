@@ -1,0 +1,125 @@
+// *****************************************************************************************
+// 
+// templates/operations.*.hbs
+//
+// *****************************************************************************************
+{{#each model.encodes.endPoints}}
+  {{#each operations}}
+
+    {{!-- /**
+    *
+    * TODO DAVE: Rewrite this for dotnet
+    *
+    * {{{formatForTsDoc description}}}
+    *
+    * @param options - An object containing the options for this method.
+    * @param parameters - An object containing the parameters for this method.
+    {{#each ../parameters }}
+    * @param {{{name}}} - {{#if (getValue description)}}{{{getValue description}}}{{/if}}
+    {{/each}}
+    {{#each request/queryParameters}}
+    * @param {{{name}}} - {{#if (getValue description)}}{{{getValue description}}}{{/if}}
+    {{/each}}
+    * @param headers - An object literal of key value pairs of the headers to be
+    * sent with this request.
+    {{#or (is method "patch") (is method "post") (is method "put")}}
+    * @param body - The data to send as the request body.
+    {{/or}}
+    * @param rawResponse - Set to true to return entire Response object instead of DTO.
+    *
+    * @returns A promise of type Response if rawResponse is true, a promise of type {{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}} otherwise.
+    * {{#if (eq (lowercase @root.metadata.categories.[CC Version Status].[0]) "beta")}}
+    * @beta
+    * {{/if}}
+    */ --}}
+
+    public async Task<Response | {{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}}> {{name}}(Options options, bool? rawResponse = null)
+    {
+        var optionParams = options?.Parameters ?? new Dictionary<string, string>();
+        var configParams = this.ClientConfig.Parameters;
+
+        //
+        // Path parameters
+        //
+        Dictionary<string, string> pathParams = new Dictionary<string, string>();
+
+        {{#each ../parameters}}
+        if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+        {
+            pathParams["{{{name}}}"] = optionParams["{{{name}}}"];
+        }
+        {{! if it is a common path parameter, fallback to client config for undefined }}
+        {{#if (isCommonPathParameter name)}} 
+        else if (configParams.ContainsKey("{{{name}}}"))
+        {
+            pathParams["{{{name}}}"] = configParams["{{{name}}}"];
+        } 
+        {{/if}}
+        {{/each}}     
+
+        //
+        // Query parameters - Standard
+        //
+        Dictionary<string, object> queryParams = new Dictionary<string, object>();
+        
+        {{#each request.queryParameters}}
+        if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+        {
+            queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
+        }
+        else if (configParams.ContainsKey("{{{name}}}") && configParams["{{{name}}}"] != null)
+        {
+            queryParams["{{{name}}}"] = configParams["{{{name}}}"];
+        }
+        {{#if (is required "true")}}
+        else
+        {
+            throw new Exception("Missing required query parameter: {{{name}}}");
+        }
+        {{/if}}
+        {{#unless @last}}
+
+        {{/unless}}
+        {{/each}}
+        //
+        // Query parameters - Custom
+        //
+        foreach (var key in optionParams.Keys)
+        {
+            if (key.StartsWith("c_") && optionParams[key] != null)
+            {
+                queryParams[key] = optionParams[key];
+            }
+            else if (!queryParams.ContainsKey(key) && !pathParams.ContainsKey(key))
+            {
+                Console.WriteLine($"Invalid Parameter: {key}");
+            }
+        }
+
+        //
+        // Headers
+        //
+        var baseHeaders = StaticClientX.GetHeaders(options);
+        var additionalHeaders = new Dictionary<string, string>();
+        additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
+        {{#if (isRequestWithPayload request)}}
+        additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
+        {{/if}}
+        var mergedHeaders = StaticClientX.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
+
+        // DAVE TODO
+        return StaticClient.{{method}}({
+          client: this,
+          rawResponse: rawResponse,
+          path: "{{../path}}",
+          pathParameters: pathParams,
+          queryParameters: queryParams,
+          retrySettings: (options || {}).retrySettings,
+          headers: mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
+          body: (options || {}).body{{/or}},
+          ...(options.fetchOptions && { fetchOptions: options.fetchOptions })
+        });
+    }
+
+  {{/each}}
+{{/each}}

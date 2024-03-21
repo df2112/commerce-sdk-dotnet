@@ -1,0 +1,176 @@
+// *****************************************************************************************
+// 
+// templates/clientInstance.*.hbs
+//
+// *****************************************************************************************
+
+using System.Collections.Generic;
+using Salesforce.CommerceCloud.Core;
+using Salesforce.CommerceCloud.WhateverElse;
+
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
+{
+    // DAVE TODO - THIS PROBABLY BELONGS IN STATICCLIENT.CS
+    public static class StaticClientX
+    {
+        public static Dictionary<string, string> GetHeaders(Options options)
+        {
+            return options?.Headers ?? new Dictionary<string, string>();
+        }
+        
+        public static Dictionary<string, string> MergeHeaders(params Dictionary<string, string>[] allHeaders)
+        {
+            var merged = new Dictionary<string, string>();
+            foreach (var headers in allHeaders)
+            {
+                foreach (var header in headers)
+                {
+                    if (merged.ContainsKey(header.Key))
+                    {
+                        merged[header.Key] = $"{merged[header.Key]}, {header.Value}";
+                    }
+                    else
+                    {
+                        merged[header.Key] = header.Value;
+                    }
+                }
+            }
+            return merged;
+        }
+    }
+
+    // DAVE TODO - THIS STUFF IS DUPLICATED ALL OVER THE PLACE
+    public record Parameters
+    {
+        public string OrganizationId { get; init; }
+        // Add other parameters here as needed
+        public Dictionary<string, string> AdditionalProperties { get; set; }
+    }
+
+    public record OperationOptions
+    {
+        // Add fields here as needed
+    }
+
+    public record RequestInit
+    {
+        // Add fields here as needed
+    }
+
+    public record LoginRequest
+    {
+        // Add fields here as needed
+    }
+
+    public record Options
+    {
+        public Parameters Parameters { get; set; }
+        public OperationOptions RetrySettings { get; set; }
+        public RequestInit FetchOptions { get; set; }
+        public Dictionary<string, string> Headers { get; set; }
+        {{#or (is method "patch") (is method "post") (is method "put")}}
+        public LoginRequest Body { get; set; }
+        {{/or}}
+    }
+
+    public record Response
+    {
+        // Add fields here as needed
+    }
+}
+ 
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
+{
+  {{#each dataTypes}}
+  {{!-- TODO: Remove this special case handling once namespaced types are added --}}
+      {{#if (eq (getValue name) "ResourceBadRequest")}}
+          // This is a known deviation from the RAML definition, required due to limitations in
+          // the SDK generation. The full definition will be included in the next major release.
+          export type ResourceBadRequest = { [key: string]: any };
+      {{else if (or (isTypeDefinition this) (isArrayType this))}}
+  {{!-- public record1 {{getValue name}}  --}}
+  {{> dtoPartial-cs typeDto=this}}
+      {{/if}}
+      {{!-- Traits are internal types and do not need to be exported --}}
+      {{#if (isTraitDefinition this)}}
+        {{#if (isAllowedTrait this) }}
+  {{> dtoPartial-cs typeDto=this}}
+        {{else}}
+        {{log "Cannot convert invalid trait to type:" (getValue name) lavel="warn"}}
+        {{/if}}
+      {{/if}}
+  {{/each}}
+
+}
+
+/**
+* [{{{metadata.name}}}](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta={{{metadata.assetId}}}:Summary)
+* ==================================
+*
+* *{{metadata.description}}*<br />
+*
+* {{#if (isShopperAPI name) }}
+* Example with shopper auth
+* {{else}}
+* For instructions on how to retrieve access token for admin APIs: <a>https://developer.salesforce.com/docs/commerce/commerce-api/guide/authorization-for-admin-apis.html</a><br/><br/>
+* Example with admin auth
+* {{/if}}
+* ```typescript
+* import { {{pascalcase metadata.categories.[CC API Family].[0]}}, ClientConfig{{#if (isShopperAPI name) }}, Customer, slasHelpers{{/if}} } from "commerce-sdk";
+* // or
+* const { {{pascalcase metadata.categories.[CC API Family].[0]}}, ClientConfig{{#if (isShopperAPI name) }}, Customer, slasHelpers{{/if}} } = require("commerce-sdk");
+* 
+* const clientConfig: ClientConfig = {
+*   parameters: {
+*     clientId: "XXXXXX",
+*     organizationId: "XXXX",
+*     shortCode: "XXX",
+*     siteId: "XX"
+*   }
+* };
+* {{#if (isShopperAPI name) }}
+* // must be registered in SLAS. On server, redirectURI is never called
+* const redirectURI = "http://localhost:3000/callback";
+* const slasClient = new Customer.ShopperLogin(clientConfig);
+* token = await slasHelpers.loginGuestUser(slasClient, { redirectURI });
+* {{else}}
+* token = { access_token: 'INSERT_ACCESS_TOKEN_HERE' };
+* {{/if}}
+* clientConfig.headers['authorization'] = `Bearer ${token.access_token}`;
+* const {{name.lowerCamelCase}}Client = new {{pascalcase metadata.categories.[CC API Family].[0]}}.{{name.upperCamelCase}}(clientConfig);
+* ```
+*
+* <span style="font-size:.7em; display:block; text-align: right">
+* API Version: {{metadata.version}}<br />
+* Last Updated: {{metadata.updatedDate}}<br />  
+* </span>
+{{#if (eq (lowercase metadata.categories.[CC Version Status].[0]) "beta")}}
+* @beta 
+* {{/if}}
+* 
+*/
+
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
+{
+   public class {{name.upperCamelCase}} : BaseClient 
+    {
+        public const string USER_AGENT_HEADER = "user-agent";
+        public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}};"
+
+        public {{name.upperCamelCase}}(ClientConfig config) : base(config)
+        {
+            if (string.IsNullOrEmpty(config.BaseUri))
+            {
+                this.ClientConfig.BaseUri = GetBaseUriFromDocument(model);
+            }
+        }
+
+        private string GetBaseUriFromDocument(ModelType model)
+        {
+            // Implementation here...
+        }
+
+        {{> operationsPartial-cs}}
+
+    }
+}

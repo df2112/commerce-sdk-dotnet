@@ -69,6 +69,7 @@ dist
 .idea
 
 # Release folders
+dotnet-renderedTemplates
 renderedTemplates
 .vscode
 updateApisTmp

@@ -12,10 +12,10 @@ import extendHandlebars from "handlebars-helpers";
 import { readJsonSync } from "fs-extra";
 
 const PROJECT_ROOT = path.join(__dirname, "../..");
-const TEMPLATE_DIRECTORY = path.join(PROJECT_ROOT, "templates");
+const TEMPLATE_DIRECTORY = path.join(PROJECT_ROOT, "dotnet-templates");
 const HELPERS_TEMPLATE_DIRECTORY = path.join(
   PROJECT_ROOT,
-  "src",
+  "dotnet-src",
   "static",
   "helperTemplates"
 );
@@ -40,14 +40,6 @@ export function registerHelpers(): void {
  */
 export function registerPartials(): void {
   generate.registerPartial(
-    "dtoPartial",
-    path.join(TEMPLATE_DIRECTORY, "dtoPartial.ts.hbs")
-  );
-  generate.registerPartial(
-    "operationsPartial",
-    path.join(TEMPLATE_DIRECTORY, "operations.ts.hbs")
-  );
-  generate.registerPartial(
     "dtoPartial-cs",
     path.join(TEMPLATE_DIRECTORY, "dtoPartial.cs.hbs")
   );
@@ -61,57 +53,17 @@ function addTemplates(
   apis: generate.ApiMetadata,
   outputBasePath: string
 ): generate.ApiMetadata {
-  apis.addTemplate(
-    path.join(TEMPLATE_DIRECTORY, "index.ts.hbs"),
-    path.join(outputBasePath, "index.ts")
-  );
-  // apis.addTemplate(
-  //   path.join(TEMPLATE_DIRECTORY, "index.cs.hbs"),
-  //   path.join(outputBasePath, "index.cs")
-  // );
 
-  const helperTemplateFileNames = ["index", "shopperCustomer"];
+  const helperTemplateFileNames = ["shopperCustomer"];
   helperTemplateFileNames.forEach((name: string) => {
     apis.addTemplate(
-      path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.ts.hbs`),
-      path.join(outputBasePath, "helpers", `${name}.ts`)
+      path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.cs.hbs`),
+      path.join(outputBasePath, "helpers", `${name}.cs`)
     );
-
-    if (name === "shopperCustomer") {
-      apis.addTemplate(
-        path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.cs.hbs`),
-        path.join(outputBasePath, "helpers", `${name}.cs`)
-      );
-    }
   });
 
   apis.children.forEach((child: generate.ApiMetadata) => {
-    child.addTemplate(
-      path.join(TEMPLATE_DIRECTORY, "apiFamily.ts.hbs"),
-      path.join(
-        outputBasePath,
-        child.name.lowerCamelCase,
-        `${child.name.lowerCamelCase}.ts`
-      )
-    );
-    // child.addTemplate(
-    //   path.join(TEMPLATE_DIRECTORY, "apiFamily.cs.hbs"),
-    //   path.join(
-    //     outputBasePath,
-    //     child.name.lowerCamelCase,
-    //     `${child.name.lowerCamelCase}.cs`
-    //   )
-    // );
     child.children.forEach(async (api) => {
-      api.addTemplate(
-        path.join(TEMPLATE_DIRECTORY, "ClientInstance.ts.hbs"),
-        path.join(
-          outputBasePath,
-          child.name.lowerCamelCase,
-          api.name.lowerCamelCase,
-          `${api.name.lowerCamelCase}.ts`
-        )
-      );
       api.addTemplate(
         path.join(TEMPLATE_DIRECTORY, "ClientInstance.cs.hbs"),
         path.join(
