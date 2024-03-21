@@ -1,3 +1,5 @@
+# DAVE exclusions!
+!node_modules/@commerce-apps/raml-toolkit/lib/generate/handlebarsAmfHelpers.js
 # Logs
 logs
 *.log
