@@ -6,7 +6,7 @@
  */
 
 import { commonParameterPositions } from "@commerce-apps/core";
-import { amf } from "@commerce-apps/raml-toolkit";
+import { amf, generate } from "@commerce-apps/raml-toolkit";
 
 /**
  * Given an individual type or an array of types in the format Array\<Foo | Baa\>
@@ -131,4 +131,25 @@ export const isAllowedTrait = (trait: amf.model.domain.Trait): boolean => {
  */
 export const isShopperAPI = (name: string): boolean => {
   return name.toString().toLowerCase().startsWith("shop");
+};
+/**
+ * Get data type of a property - DAVE C# version!
+ *
+ * @param property - An AMF property
+ *
+ * @returns data type, if defined in the property, the default type otherwise
+ */
+exports.getTypeFromPropertyCSharp = (property) => {
+  const returnType = generate.handlebarsAmfHelpers.getTypeFromProperty(property);
+
+  switch (returnType) {
+    case "any":
+      return "DAVE_TO_FIX";
+    case "boolean":
+      return "bool";
+    case "number":
+      return "int";
+    default:
+      return returnType;
+  }
 };

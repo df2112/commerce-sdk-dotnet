@@ -4,9 +4,9 @@
 {
 {{#each (getProperties typeDto)}}
 {{#if (isRequiredProperty this)}}
-  {{{getValue name}}}: {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}{{/or}};
+  {{{getValue name}}}: {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}};
 {{else if (isOptionalProperty this)}}
-  {{{getValue name}}}?: {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial typeDto=range }}{{else}}{{{getTypeFromPropertyCSharp this}}}{{/or}};
+  {{{getValue name}}}?: {{#or (eq (getTypeFromProperty this) "object")}}{{> dtoPartial typeDto=range }}{{else}}{{{getTypeFromProperty this}}}{{/or}};
 {{/if}}
 {{/each}}
 }
