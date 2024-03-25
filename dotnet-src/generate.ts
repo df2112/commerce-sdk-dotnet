@@ -8,14 +8,14 @@
 import path from "path";
 import { generate } from "@commerce-apps/raml-toolkit";
 import { registerHelpers, registerPartials, setupApis } from "./lib/utils";
-import { copySync } from "fs-extra";
+// import { copySync } from "fs-extra";
 
 const API_DIRECTORY = path.resolve(
   process.env.COMMERCE_SDK_INPUT_DIR || `${__dirname}/../dotnet-apis`
 );
 
 const OUTPUT_DIRECTORY = path.join(__dirname, "../dotnet-renderedTemplates/helpers");
-const HELPERS_DIRECTORY = path.join(__dirname, "../dotnet-src/static/helpers");
+//const HELPERS_DIRECTORY = path.join(__dirname, "../dotnet-src/static/helpers");
 
 registerHelpers();
 registerPartials();
@@ -23,7 +23,7 @@ registerPartials();
 console.log(`Creating SDK for ${API_DIRECTORY}`);
 
 const skipTestFiles = (src: string): boolean => !/\.test\.[a-z]+$/.test(src);
-copySync(HELPERS_DIRECTORY, OUTPUT_DIRECTORY, { filter: skipTestFiles });
+//copySync(HELPERS_DIRECTORY, OUTPUT_DIRECTORY, { filter: skipTestFiles });
 
 setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../dotnet-renderedTemplates`))
   .then((apis: generate.ApiMetadata) => {
