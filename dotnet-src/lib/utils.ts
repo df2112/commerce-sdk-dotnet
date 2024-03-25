@@ -56,9 +56,10 @@ function addTemplates(
 
   const helperTemplateFileNames = ["shopperCustomer"];
   helperTemplateFileNames.forEach((name: string) => {
+    let namePascalCase = name.charAt(0).toUpperCase() + name.slice(1);
     apis.addTemplate(
       path.join(HELPERS_TEMPLATE_DIRECTORY, `${name}.cs.hbs`),
-      path.join(outputBasePath, "helpers", `${name}.cs`)
+      path.join(outputBasePath, "Helpers", `${namePascalCase}.cs`)
     );
   });
 
@@ -68,9 +69,9 @@ function addTemplates(
         path.join(TEMPLATE_DIRECTORY, "ClientInstance.cs.hbs"),
         path.join(
           outputBasePath,
-          child.name.lowerCamelCase,
-          api.name.lowerCamelCase,
-          `${api.name.lowerCamelCase}.cs`
+          child.name.upperCamelCase,
+          api.name.upperCamelCase,
+          `${api.name.upperCamelCase}.cs`
         )
       );
     });
