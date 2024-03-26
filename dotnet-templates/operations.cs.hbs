@@ -109,7 +109,20 @@
         var mergedHeaders = StaticClientX.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
 
         // DAVE TODO
-        return StaticClient.{{method}}({
+        var ox = new SdkFetchOptionsWithBody(new SdkFetchOptions
+        {
+            Client = this,
+            RawResponse = rawResponse,
+            Path = "/organizations/{organizationId}/oauth2/login",
+            PathParameters = pathParams,
+            QueryParameters = queryParams,
+            Headers = mergedHeaders,
+            FetchOptions = options.FetchOptions,
+            Body = options.Body
+        });
+
+        return await FetchHelper.Post(ox);
+        {{!-- return FetchHelper.{{getValueCSharp method}}({
           client: this,
           rawResponse: rawResponse,
           path: "{{../path}}",
@@ -119,7 +132,7 @@
           headers: mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
           body: (options || {}).body{{/or}},
           ...(options.fetchOptions && { fetchOptions: options.fetchOptions })
-        });
+        }); --}}
         
     }
 

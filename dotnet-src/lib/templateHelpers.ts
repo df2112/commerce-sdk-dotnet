@@ -210,3 +210,7 @@ exports.getValueCSharp = (name) => {
 exports.equalsCSharp = (arg1, arg2) => {
   return arg1 === arg2;
 }
+
+exports.upperCamelCaseCSharp = (name) => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
