@@ -32,7 +32,7 @@
     * {{/if}}
     */ --}}
 
-    public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
+    public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
     {
         var optionParams = options?.Parameters ?? new Dictionary<string, string>();
         var configParams = this.ClientConfig.Parameters;

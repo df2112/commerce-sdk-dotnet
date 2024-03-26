@@ -83,13 +83,13 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}};
    public class {{name.upperCamelCase}} : BaseClient 
     {
         public const string USER_AGENT_HEADER = "user-agent";
-        public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}};"
+        public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
 
         public {{name.upperCamelCase}}(ClientConfig config) : base(config)
         {
             if (string.IsNullOrEmpty(config.BaseUri))
             {
-                this.ClientConfig.BaseUri = GetBaseUriFromDocument(model);
+                this.ClientConfig.BaseUri = "{{getBaseUriFromDocument model}}";
             }
         }
 
