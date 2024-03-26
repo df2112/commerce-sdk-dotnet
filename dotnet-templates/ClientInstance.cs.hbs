@@ -10,75 +10,6 @@ using System.Text.Json.Serialization;
 using Salesforce.CommerceCloud.Foundation;
 
 namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}; 
-
-    // DAVE TODO - THIS PROBABLY BELONGS IN STATICCLIENT.CS
-    public static class StaticClientX
-    {
-        public static Dictionary<string, string> GetHeaders(Options options)
-        {
-            return options?.Headers ?? new Dictionary<string, string>();
-        }
-        
-        public static Dictionary<string, string> MergeHeaders(params Dictionary<string, string>[] allHeaders)
-        {
-            var merged = new Dictionary<string, string>();
-            foreach (var headers in allHeaders)
-            {
-                foreach (var header in headers)
-                {
-                    if (merged.ContainsKey(header.Key))
-                    {
-                        merged[header.Key] = $"{merged[header.Key]}, {header.Value}";
-                    }
-                    else
-                    {
-                        merged[header.Key] = header.Value;
-                    }
-                }
-            }
-            return merged;
-        }
-    }
-
-    // DAVE TODO - THIS STUFF IS DUPLICATED ALL OVER THE PLACE
-    public record Parameters
-    {
-        public string OrganizationId { get; init; }
-        // Add other parameters here as needed
-        public Dictionary<string, string> AdditionalProperties { get; set; }
-    }
-
-    public record OperationOptions
-    {
-        // Add fields here as needed
-    }
-
-    public record RequestInit
-    {
-        // Add fields here as needed
-    }
-
-    {{!-- public record LoginRequest
-    {
-        // Add fields here as needed
-    } --}}
-
-    public record Options
-    {
-        public Parameters Parameters { get; set; }
-        public OperationOptions RetrySettings { get; set; }
-        public RequestInit FetchOptions { get; set; }
-        public Dictionary<string, string> Headers { get; set; }
-        {{#or (is method "patch") (is method "post") (is method "put")}}
-        public LoginRequest Body { get; set; }
-        {{/or}}
-    }
-
-    public record Response
-    {
-        // Add fields here as needed
-    }
-
  
   {{#each dataTypes}}
   {{!-- TODO: Remove this special case handling once namespaced types are added --}}
@@ -162,11 +93,5 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}};
             }
         }
 
-        private string GetBaseUriFromDocument(ModelType model)
-        {
-            // Implementation here...
-        }
-
         {{> operationsPartial-cs}}
-
     }

@@ -5,7 +5,6 @@
 // *****************************************************************************************
 {{#each model.encodes.endPoints}}
   {{#each operations}}
-
     {{!-- /**
     *
     * TODO DAVE: Rewrite this for dotnet
@@ -33,7 +32,6 @@
     * {{/if}}
     */ --}}
 
-    {{!-- public async Task<Response | {{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}}> {{name}}(Options options, bool? rawResponse = null) --}}
     public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{addNamespace (getReturnTypeFromOperation this) @root.name.upperCamelCase}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
     {
         var optionParams = options?.Parameters ?? new Dictionary<string, string>();
@@ -100,40 +98,34 @@
         //
         // Headers
         //
-        var baseHeaders = StaticClientX.GetHeaders(options);
+        var baseHeaders = FetchHelper.GetHeaders(options);
         var additionalHeaders = new Dictionary<string, string>();
         additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
         {{#if (isRequestWithPayload request)}}
         additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
         {{/if}}
-        var mergedHeaders = StaticClientX.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
+        var mergedHeaders = FetchHelper.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
 
-        // DAVE TODO
-        var ox = new SdkFetchOptionsWithBody(new SdkFetchOptions
-        {
+        // DAVE TODO - THE ORIGINAL SF IDEA IS A MESS
+
+        var fetchOptionsInit = new SdkFetchOptions{
             Client = this,
             RawResponse = rawResponse,
-            Path = "/organizations/{organizationId}/oauth2/login",
-            PathParameters = pathParams,
-            QueryParameters = queryParams,
-            Headers = mergedHeaders,
-            FetchOptions = options.FetchOptions,
-            Body = options.Body
-        });
+            Path = "{{../path}}",
+            PathParameters = new PathParameters(pathParams),
+            QueryParameters = new QueryParameters(queryParams),
+            Headers = mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
+            // Body = options.Body{{/or}},
+            // FetchOptions = options.FetchOptions
+        };
 
-        return await FetchHelper.Post(ox);
-        {{!-- return FetchHelper.{{getValueCSharp method}}({
-          client: this,
-          rawResponse: rawResponse,
-          path: "{{../path}}",
-          pathParameters: pathParams,
-          queryParameters: queryParams,
-          retrySettings: (options || {}).retrySettings,
-          headers: mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
-          body: (options || {}).body{{/or}},
-          ...(options.fetchOptions && { fetchOptions: options.fetchOptions })
-        }); --}}
-        
+        {{#or (is method "patch") (is method "post") (is method "put")}}
+        var fetchOptionsFinal = new SdkFetchOptionsWithBody(fetchOptionsInit) {};
+        {{else}}
+        var fetchOptionsFinal = new SdkFetchOptionsNoBody(fetchOptionsInit) {};
+        {{/or}}
+
+        return await FetchHelper.{{getValueCSharp method}}(fetchOptionsFinal);
     }
 
   {{/each}}
