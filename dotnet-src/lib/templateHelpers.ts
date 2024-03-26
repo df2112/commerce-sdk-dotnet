@@ -142,14 +142,71 @@ export const isShopperAPI = (name: string): boolean => {
 exports.getTypeFromPropertyCSharp = (property) => {
   const returnType = generate.handlebarsAmfHelpers.getTypeFromProperty(property);
 
-  switch (returnType) {
-    case "any":
-      return "DAVE_TO_FIX";
-    case "boolean":
-      return "bool";
-    case "number":
-      return "int";
-    default:
-      return returnType;
+  // switch (returnType) {
+  //   case "any":
+  //     return "dynamic";
+  //   case "Array<any>":
+  //     return "dynamic[]";
+  //   case "Array<object>":
+  //     return "object[]";
+  //   case "Array<Filter>":
+  //     return "Filter[]";
+  //   case "Array<PropertyValueDefinition>":
+  //     return "PropertyValueDefinition[]";
+  //   case "Array<Sort>":
+  //     return "Sort[]";
+  //   case "Array<string>":
+  //     return "string[]";
+  //   case "boolean":
+  //     return "bool";
+  //   case "number":
+  //     return "int";
+  //   default:
+  //     return returnType;
+  // }
+
+  if (returnType.startsWith("Array<") && returnType.endsWith(">")) {
+    const elementType = returnType.slice(6, -1);  // Extract the element type
+
+    switch (elementType) {
+      case "any":
+        return "dynamic[]";
+      default:
+        return elementType + "[]";  // Default to the element type followed by []
+    }
+  } else {
+    switch (returnType) {
+      case "any":
+        return "dynamic";
+      case "boolean":
+        return "bool";
+      case "number":
+        return "int";
+      default:
+        return returnType;
+    }
   }
 };
+
+/**
+ * Get value from an AMF field.
+ *
+ * @param name - The field to extract the value from
+ *
+ * @returns The string of the value
+ */
+exports.getValueCSharp = (name) => {
+  let value;
+  if (typeof name?.value === "function") {
+    value = name.value();
+  }
+
+  //let valuePascalCase = value.charAt(0).toUpperCase() + value.slice(1);
+  return value == null 
+    ? null 
+    : `${value.charAt(0).toUpperCase() + value.slice(1)}`;
+};
+
+exports.equalsCSharp = (arg1, arg2) => {
+  return arg1 === arg2;
+}

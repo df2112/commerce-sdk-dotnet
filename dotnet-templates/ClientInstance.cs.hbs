@@ -5,10 +5,12 @@
 // *****************************************************************************************
 
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Salesforce.CommerceCloud.Foundation;
 
-namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
-{
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}; 
+
     // DAVE TODO - THIS PROBABLY BELONGS IN STATICCLIENT.CS
     public static class StaticClientX
     {
@@ -56,10 +58,10 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}
         // Add fields here as needed
     }
 
-    public record LoginRequest
+    {{!-- public record LoginRequest
     {
         // Add fields here as needed
-    }
+    } --}}
 
     public record Options
     {
@@ -76,10 +78,8 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}
     {
         // Add fields here as needed
     }
-}
+
  
-namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
-{
   {{#each dataTypes}}
   {{!-- TODO: Remove this special case handling once namespaced types are added --}}
       {{#if (eq (getValue name) "ResourceBadRequest")}}
@@ -100,7 +100,7 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}
       {{/if}}
   {{/each}}
 
-}
+
 
 /**
 * [{{{metadata.name}}}](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta={{{metadata.assetId}}}:Summary)
@@ -149,8 +149,6 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}
 * 
 */
 
-namespace Salesforce.CommerceCloud.{{name.upperCamelCase}} 
-{
    public class {{name.upperCamelCase}} : BaseClient 
     {
         public const string USER_AGENT_HEADER = "user-agent";
@@ -172,4 +170,3 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}
         {{> operationsPartial-cs}}
 
     }
-}

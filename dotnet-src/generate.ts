@@ -22,12 +22,12 @@ console.log(`Creating SDK for ${API_DIRECTORY}`);
 
 const skipTestFiles = (src: string): boolean => !/\.test\.[a-z]+$/.test(src);
 
-setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../dotnet-renderedTemplates`))
-  .then((apis: generate.ApiMetadata) => {
-    console.log("Generate SDK - START");
-    apis.render()
-      .then(() => console.log("Generate SDK - FINISH"))
-  });
+// setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../dotnet-renderedTemplates`))
+//   .then((apis: generate.ApiMetadata) => {
+//     console.log("Generate SDK - START");
+//     apis.render()
+//       .then(() => console.log("Generate SDK - FINISH"))
+//   });
 
 setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../../Salesforce.CommerceCloud`))
   .then((apis: generate.ApiMetadata) => {
