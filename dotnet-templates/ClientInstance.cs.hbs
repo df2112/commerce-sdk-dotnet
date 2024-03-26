@@ -4,34 +4,29 @@
 //
 // *****************************************************************************************
 
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Salesforce.CommerceCloud.Foundation;
 
-namespace Salesforce.CommerceCloud.{{name.upperCamelCase}}; 
- 
-  {{#each dataTypes}}
-  {{!-- TODO: Remove this special case handling once namespaced types are added --}}
-      {{#if (eq (getValue name) "ResourceBadRequest")}}
-          // This is a known deviation from the RAML definition, required due to limitations in
-          // the SDK generation. The full definition will be included in the next major release.
-          export type ResourceBadRequest = { [key: string]: any };
-      {{else if (or (isTypeDefinition this) (isArrayType this))}}
-  {{!-- public record1 {{getValue name}}  --}}
-  {{> dtoPartial-cs typeDto=this}}
-      {{/if}}
-      {{!-- Traits are internal types and do not need to be exported --}}
-      {{#if (isTraitDefinition this)}}
-        {{#if (isAllowedTrait this) }}
-  {{> dtoPartial-cs typeDto=this}}
-        {{else}}
-        {{log "Cannot convert invalid trait to type:" (getValue name) lavel="warn"}}
-        {{/if}}
-      {{/if}}
-  {{/each}}
-
-
+namespace Salesforce.CommerceCloud.{{name.upperCamelCase}};  
+{{#each dataTypes}}
+{{!-- TODO: Remove this special case handling once namespaced types are added --}}
+    {{#if (eq (getValue name) "ResourceBadRequest")}}
+        // This is a known deviation from the RAML definition, required due to limitations in
+        // the SDK generation. The full definition will be included in the next major release.
+        export type ResourceBadRequest = { [key: string]: any };
+    {{else if (or (isTypeDefinition this) (isArrayType this))}}
+{{!-- public record1 {{getValue name}}  --}}
+{{> dtoPartial-cs typeDto=this}}
+    {{/if}}
+    {{!-- Traits are internal types and do not need to be exported --}}
+    {{#if (isTraitDefinition this)}}
+    {{#if (isAllowedTrait this) }}
+{{> dtoPartial-cs typeDto=this}}
+    {{else}}
+    {{log "Cannot convert invalid trait to type:" (getValue name) lavel="warn"}}
+    {{/if}}
+    {{/if}}
+{{/each}}
 
 /**
 * [{{{metadata.name}}}](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta={{{metadata.assetId}}}:Summary)
@@ -80,18 +75,18 @@ namespace Salesforce.CommerceCloud.{{name.upperCamelCase}};
 * 
 */
 
-   public class {{name.upperCamelCase}} : BaseClient 
+public class {{name.upperCamelCase}} : BaseClient 
+{
+    public const string USER_AGENT_HEADER = "user-agent";
+    public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
+
+    public {{name.upperCamelCase}}(ClientConfig config) : base(config)
     {
-        public const string USER_AGENT_HEADER = "user-agent";
-        public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
-
-        public {{name.upperCamelCase}}(ClientConfig config) : base(config)
+        if (string.IsNullOrEmpty(config.BaseUri))
         {
-            if (string.IsNullOrEmpty(config.BaseUri))
-            {
-                this.ClientConfig.BaseUri = "{{getBaseUriFromDocument model}}";
-            }
+            this.ClientConfig.BaseUri = "{{getBaseUriFromDocument model}}";
         }
-
-        {{> operationsPartial-cs}}
     }
+
+    {{> operationsPartial-cs}}
+}

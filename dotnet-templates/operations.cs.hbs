@@ -32,104 +32,104 @@
     * {{/if}}
     */ --}}
 
-    public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
+public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
+{
+    var optionParams = options?.Parameters ?? new Dictionary<string, string>();
+    var configParams = this.ClientConfig.Parameters;
+
+    //
+    // Path parameters
+    //
+    Dictionary<string, string> pathParams = new Dictionary<string, string>();
+
+    {{#each ../parameters}}
+    if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
     {
-        var optionParams = options?.Parameters ?? new Dictionary<string, string>();
-        var configParams = this.ClientConfig.Parameters;
-
-        //
-        // Path parameters
-        //
-        Dictionary<string, string> pathParams = new Dictionary<string, string>();
-
-        {{#each ../parameters}}
-        if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
-        {
-            pathParams["{{{name}}}"] = optionParams["{{{name}}}"];
-        }
-        {{! if it is a common path parameter, fallback to client config for undefined }}
-        {{#if (isCommonPathParameter name)}} 
-        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
-        {
-            pathParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
-        } 
-        {{/if}}
-        {{/each}}     
-
-        //
-        // Query parameters - Standard
-        //
-        Dictionary<string, object> queryParams = new Dictionary<string, object>();
-        
-        {{#each request.queryParameters}}
-        if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
-        {
-            queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
-        }
-        {{! if it is a common query parameter, fallback to client config for undefined }}
-        {{#if (isCommonQueryParameter name)}} 
-        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
-        {
-            queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
-        }
-        {{/if}}
-        {{#if (is required "true")}}
-        else
-        {
-            throw new Exception("Missing required query parameter: {{{name}}}");
-        }
-        {{/if}}
-        {{#unless @last}}
-
-        {{/unless}}
-        {{/each}}
-        //
-        // Query parameters - Custom
-        //
-        foreach (var key in optionParams.Keys)
-        {
-            if (key.StartsWith("c_") && optionParams[key] != null)
-            {
-                queryParams[key] = optionParams[key];
-            }
-            else if (!queryParams.ContainsKey(key) && !pathParams.ContainsKey(key))
-            {
-                Console.WriteLine($"Invalid Parameter: {key}");
-            }
-        }
-
-        //
-        // Headers
-        //
-        var baseHeaders = FetchHelper.GetHeaders(options);
-        var additionalHeaders = new Dictionary<string, string>();
-        additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
-        {{#if (isRequestWithPayload request)}}
-        additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
-        {{/if}}
-        var mergedHeaders = FetchHelper.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
-
-        // DAVE TODO - THE ORIGINAL SF IDEA IS A MESS
-
-        var fetchOptionsInit = new SdkFetchOptions{
-            Client = this,
-            RawResponse = rawResponse,
-            Path = "{{../path}}",
-            PathParameters = new PathParameters(pathParams),
-            QueryParameters = new QueryParameters(queryParams),
-            Headers = mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
-            // Body = options.Body{{/or}},
-            // FetchOptions = options.FetchOptions
-        };
-
-        {{#or (is method "patch") (is method "post") (is method "put")}}
-        var fetchOptionsFinal = new SdkFetchOptionsWithBody(fetchOptionsInit) {};
-        {{else}}
-        var fetchOptionsFinal = new SdkFetchOptionsNoBody(fetchOptionsInit) {};
-        {{/or}}
-
-        return await FetchHelper.{{getValueCSharp method}}(fetchOptionsFinal);
+        pathParams["{{{name}}}"] = optionParams["{{{name}}}"];
     }
+    {{! if it is a common path parameter, fallback to client config for undefined }}
+    {{#if (isCommonPathParameter name)}} 
+    else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
+    {
+        pathParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
+    } 
+    {{/if}}
+    {{/each}}     
+
+    //
+    // Query parameters - Standard
+    //
+    Dictionary<string, object> queryParams = new Dictionary<string, object>();
+    
+    {{#each request.queryParameters}}
+    if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+    {
+        queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
+    }
+    {{! if it is a common query parameter, fallback to client config for undefined }}
+    {{#if (isCommonQueryParameter name)}} 
+    else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
+    {
+        queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
+    }
+    {{/if}}
+    {{#if (is required "true")}}
+    else
+    {
+        throw new Exception("Missing required query parameter: {{{name}}}");
+    }
+    {{/if}}
+    {{#unless @last}}
+
+    {{/unless}}
+    {{/each}}
+    //
+    // Query parameters - Custom
+    //
+    foreach (var key in optionParams.Keys)
+    {
+        if (key.StartsWith("c_") && optionParams[key] != null)
+        {
+            queryParams[key] = optionParams[key];
+        }
+        else if (!queryParams.ContainsKey(key) && !pathParams.ContainsKey(key))
+        {
+            Console.WriteLine($"Invalid Parameter: {key}");
+        }
+    }
+
+    //
+    // Headers
+    //
+    var baseHeaders = FetchHelper.GetHeaders(options);
+    var additionalHeaders = new Dictionary<string, string>();
+    additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
+    {{#if (isRequestWithPayload request)}}
+    additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
+    {{/if}}
+    var mergedHeaders = FetchHelper.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
+
+    // DAVE TODO - THE ORIGINAL SF IDEA IS A MESS
+
+    var fetchOptionsInit = new SdkFetchOptions{
+        Client = this,
+        RawResponse = rawResponse,
+        Path = "{{../path}}",
+        PathParameters = new PathParameters(pathParams),
+        QueryParameters = new QueryParameters(queryParams),
+        Headers = mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
+        // Body = options.Body{{/or}},
+        // FetchOptions = options.FetchOptions
+    };
+
+    {{#or (is method "patch") (is method "post") (is method "put")}}
+    var fetchOptionsFinal = new SdkFetchOptionsWithBody(fetchOptionsInit) {};
+    {{else}}
+    var fetchOptionsFinal = new SdkFetchOptionsNoBody(fetchOptionsInit) {};
+    {{/or}}
+
+    return await FetchHelper.{{getValueCSharp method}}(fetchOptionsFinal);
+}
 
   {{/each}}
 {{/each}}
