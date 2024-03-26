@@ -49,9 +49,9 @@
         }
         {{! if it is a common path parameter, fallback to client config for undefined }}
         {{#if (isCommonPathParameter name)}} 
-        else if (configParams.ContainsKey("{{{name}}}"))
+        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
         {
-            pathParams["{{{name}}}"] = configParams["{{{name}}}"];
+            pathParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
         } 
         {{/if}}
         {{/each}}     
@@ -66,10 +66,13 @@
         {
             queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
         }
-        else if (configParams.ContainsKey("{{{name}}}") && configParams["{{{name}}}"] != null)
+        {{! if it is a common query parameter, fallback to client config for undefined }}
+        {{#if (isCommonQueryParameter name)}} 
+        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
         {
-            queryParams["{{{name}}}"] = configParams["{{{name}}}"];
+            queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
         }
+        {{/if}}
         {{#if (is required "true")}}
         else
         {
