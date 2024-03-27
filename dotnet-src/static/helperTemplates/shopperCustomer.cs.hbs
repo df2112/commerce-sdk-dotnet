@@ -1,10 +1,10 @@
-import { ShopperToken, stripBearer, ResponseError, getObjectFromResponse } from "@commerce-apps/core"
-import  * as sdk from "../"
+using Salesforce.CommerceCloud.Foundation;
+using Salesforce.CommerceCloud.ShopperLogin;
 
+// DAVE NEEDS TO DO THIS BIT!
+//
 // Type of the first input parameter for the auth function
-type AuthFuncParamType = Parameters<sdk.{{metadata.shopperAuthClient}}["{{metadata.shopperAuthApi}}"]>[0];
-// Type returned by the auth function
-type CustomerType = sdk.{{metadata.shopperAuthClient}}.{{metadata.shopperAuthDataType}};
+// type AuthFuncParamType = Parameters<sdk.{{metadata.shopperAuthClient}}["{{metadata.shopperAuthApi}}"]>[0];
 
 /**
  * This wraps the parameters for the authorization call to retrieve a token.
@@ -24,17 +24,30 @@ type CustomerType = sdk.{{metadata.shopperAuthClient}}.{{metadata.shopperAuthDat
  * @param body - Post body required for authorization
  * @returns the retrieved Shopper token
  */
-export async function getShopperToken (
-    clientConfig: sdk.ClientConfig,
-    body: AuthFuncParamType["body"]
-): Promise<ShopperToken<CustomerType>>{
-    let client = new sdk.{{metadata.shopperAuthClient}}(clientConfig);
+public class ShopperCustomer
+{
+    private readonly ShopperCustomers _client;
+    private readonly ShopperLogin _loginClient;
 
-    const response = await client.{{metadata.shopperAuthApi}}({body}, true);
-    if (!response.ok) {
-        throw new ResponseError(response);
+    public ShopperCustomer(ClientConfig clientConfig)
+    {
+        _client = new ShopperCustomers(clientConfig);
+        _loginClient = new ShopperLogin(clientConfig);
     }
-    const dto: CustomerType = await getObjectFromResponse(response);
 
-    return new ShopperToken(dto, stripBearer(response.headers.get("Authorization")));
+    public async Task<ShopperToken<Customer>> GetShopperToken(dynamic body)
+    {
+        var response = await _loginClient.authorizeCustomer(body, true);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException("Response was not successful");
+        }
+
+        var dto = await response.Content.ReadAsAsync<Customer>();
+        var authHeader = response.Headers.GetValues("Authorization").First();
+        string token = authHeader.Replace("Bearer ", "");
+
+        return new ShopperToken<Customer>(dto, token);
+    }
 }
