@@ -86,18 +86,21 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     //
     // Query parameters - Custom
     //
-    foreach (var key in optionParams.Keys)
+    if (optionParams != null)
     {
-        if (key.StartsWith("c_") && optionParams[key] != null)
+        foreach (var entry in optionParams.AdditionalProperties)
         {
-            queryParams[key] = optionParams[key];
-        }
-        else if (!queryParams.ContainsKey(key) && !pathParams.ContainsKey(key))
-        {
-            Console.WriteLine($"Invalid Parameter: {key}");
+            if (entry.Key.StartsWith("c_") && entry.Value != null)
+            {
+                queryParams[entry.Key] = entry.Value;
+            }
+            else if (!queryParams.ContainsKey(entry.Key) && !pathParams.ContainsKey(entry.Key))
+            {
+                Console.WriteLine($"Invalid Parameter: {entry.Key}");
+            }
         }
     }
-
+    
     //
     // Headers
     //
