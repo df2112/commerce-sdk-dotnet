@@ -114,7 +114,7 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     {{#if (isRequestWithPayload request)}}
     additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
     {{/if}}
-    var mergedHeaders = FetchHelper.MergeHeaders(new Dictionary<string, string>[] { baseHeaders, additionalHeaders });        
+    var mergedHeaders = FetchHelper.MergeHeaders([baseHeaders.Headers, additionalHeaders]);        
 
     // DAVE TODO - THE ORIGINAL SF IDEA IS A MESS
 
