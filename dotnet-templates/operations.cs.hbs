@@ -34,8 +34,8 @@
 
 public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
 {
-    var optionParams = options?.Parameters ?? new Dictionary<string, string>();
-    var configParams = this.ClientConfig.Parameters;
+    var optionParams = options.Parameters;
+    var configParams = ClientConfig.Parameters;
 
     //
     // Path parameters
@@ -43,9 +43,9 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     Dictionary<string, string> pathParams = new Dictionary<string, string>();
 
     {{#each ../parameters}}
-    if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+    if (optionParams != null && !string.IsNullOrEmpty(optionParams.{{{getValueCSharp name}}}))
     {
-        pathParams["{{{name}}}"] = optionParams["{{{name}}}"];
+        pathParams["{{{name}}}"] = optionParams.{{{getValueCSharp name}}};
     }
     {{! if it is a common path parameter, fallback to client config for undefined }}
     {{#if (isCommonPathParameter name)}} 
