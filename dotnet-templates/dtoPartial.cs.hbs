@@ -14,12 +14,12 @@ public class {{getValue typeDto.name}}
 {{#if (isRequiredProperty this)}}
     {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public required {{{getTypeFromPropertyCSharp this}}}{{/or}} {{{getValueCSharp name}}} { get; set; }
 {{else if (isOptionalProperty this)}}
-    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public {{{getTypeFromPropertyCSharp this}}}{{/or}} {{{getValueCSharp name}}} { get; set; } 
+    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public {{{getTypeFromPropertyCSharp this}}}?{{/or}} {{{getValueCSharp name}}} { get; set; } 
 {{/if}}
 
 {{/each}}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
-    public Dictionary<string, dynamic> AdditionalProperties { get; init; }
+    public Dictionary<string, dynamic>? AdditionalProperties { get; init; }
 {{/if}}
 }
 {{/if}}
