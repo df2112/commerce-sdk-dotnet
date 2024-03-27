@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "dotnet-build": "npm run dotnet-clean && npm run dotnet-render",
-    "dotnet-clean": "rm -rf dotnet-renderedTemplates dist",
+    "dotnet-clean": "rm -rf dotnet-renderedTemplates",
     "dotnet-render": "ts-node dotnet-src/generate.ts",
     "backupApis": "rm -rf updateApisTmp && mkdir updateApisTmp && mv apis updateApisTmp/oldApis",
     "build": "npm run clean && npm run renderTemplates && tsc && eslint dist --ext .ts,.js --quiet --fix",
