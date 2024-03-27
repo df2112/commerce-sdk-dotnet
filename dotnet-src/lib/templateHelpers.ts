@@ -197,14 +197,25 @@ exports.getTypeFromPropertyCSharp = (property) => {
  */
 exports.getValueCSharp = (name) => {
   let value;
+
   if (typeof name?.value === "function") {
     value = name.value();
   }
 
+  if (value == null) {
+    return null;
+  }
+
   //let valuePascalCase = value.charAt(0).toUpperCase() + value.slice(1);
-  return value == null 
-    ? null 
-    : `${value.charAt(0).toUpperCase() + value.slice(1)}`;
+  // return value == null 
+  //   ? null 
+  //   : `${value.charAt(0).toUpperCase() + value.slice(1)}`;
+
+  return value
+    .toLowerCase()
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
 };
 
 exports.equalsCSharp = (arg1, arg2) => {
