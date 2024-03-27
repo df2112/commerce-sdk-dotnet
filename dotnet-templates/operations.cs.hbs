@@ -61,28 +61,32 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     //
     Dictionary<string, object> queryParams = new Dictionary<string, object>();
     
-    {{#each request.queryParameters}}
-    if (optionParams.ContainsKey("{{{name}}}") && optionParams["{{{name}}}"] != null)
+    if (optionParams != null)
     {
-        queryParams["{{{name}}}"] = optionParams["{{{name}}}"];
-    }
+    {{#each request.queryParameters}}
+        if (optionParams.AdditionalProperties.TryGetValue("{{{name}}}", out string? {{{getValueCSharp name}}}Value))
+        {
+            queryParams["{{{name}}}"] = {{{getValueCSharp name}}}Value;
+        }
     {{! if it is a common query parameter, fallback to client config for undefined }}
     {{#if (isCommonQueryParameter name)}} 
-    else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
-    {
-        queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
-    }
+        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
+        {
+            queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
+        }
     {{/if}}
     {{#if (is required "true")}}
-    else
-    {
-        throw new Exception("Missing required query parameter: {{{name}}}");
-    }
+        else
+        {
+            throw new Exception("Missing required query parameter: {{{name}}}");
+        }
     {{/if}}
     {{#unless @last}}
 
     {{/unless}}
     {{/each}}
+    }
+    
     //
     // Query parameters - Custom
     //
