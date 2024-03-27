@@ -10,7 +10,7 @@
  * Usage: ts-node examples/03-refresh-auth-token.ts
  * For more information, see [Get started with Salesforce Commerce B2C APIs](https://developer.salesforce.com/docs/commerce/commerce-api/guide/get-started.html).
  */
-import { ClientConfig, Customer } from "commerce-sdk";
+import { ClientConfig, Customer } from "../dist";
 
 // demo client credentials, if you have access to your own please replace them below.
 // do not store client secret as plaintext. Store it in a secure location.

@@ -10,7 +10,7 @@
  * Usage: ts-node examples/01-guest-shopper-auth-token.ts
  * For more information, see (Shopper Login and API Access Service)[https://developer.commercecloud.com/s/api-details/a003k00000VWfNDAA1/commerce-cloud-developer-centershopperloginandapiaccessservice].
  */
-import { ClientConfig, Customer } from "commerce-sdk";
+import { ClientConfig, Customer } from "../dist";
 
 // demo client credentials, if you have access to your own please replace them below.
 // do not store client secret as plaintext. Store it in a secure location.
