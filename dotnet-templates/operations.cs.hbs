@@ -57,6 +57,9 @@ public class {{name}}Parameters
     // QUERY parameters
     {{/if}}
     public {{#if (is required "true")}}required string{{else}}string?{{/if}} {{{getValueCSharp name}}} { get; set; }
+    {{#if @last}}
+    public Dictionary<string, string>? Custom { get; set; }
+    {{/if}}
     {{/each}}
     {{!-- HEADER parameters --}}
     {{#each request.headers}}
@@ -74,9 +77,16 @@ public class {{name}}Parameters
     {{/or}}
 }
 
-public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null)
+{{!-- public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null) --}}
+{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}
+public async Task<Response> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null)
+{{else}}
+public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null)
+{{/if}}
 {
-    {{!-- (1) HEADER parameters --}}
+    var request = new HttpRequestMessage();
+    var builder = new UriBuilder();
+    {{!-- (1) PATH parameters --}}
     //
     // PATH parameters
     //
@@ -98,24 +108,36 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     //
     // QUERY parameters
     //
+    var query = HttpUtility.ParseQueryString(builder.Query);
     {{/if}}
-    public {{#if (is required "true")}}required string{{else}}string?{{/if}} {{{getValueCSharp name}}} { get; set; }
+    query["{{{name}}}"] = options.{{{getValueCSharp name}}};
+    {{#if @last}}
+    if (options.Custom != null)
+    {
+        foreach (var pair in options.Custom)
+        {
+            query[pair.Key] = pair.Value;
+        }
+    }
+    builder.Query = query.ToString();
+    {{/if}}
     {{/each}}
     {{!-- (3) HEADER parameters --}}
     {{#each request.headers}}
     {{#if @first}}    
     //
-    // HEADER parameters{{/if}}
+    // HEADER parameters
     //
+    {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
-    public string? {{{name}}} { get; set; }
+    request.Headers.{{{name}}} = new AuthenticationHeaderValue("TODO: Bearer or Basic???", options.{{{name}}});
     {{/each}}
     {{!-- (4) BODY parameter --}}
     {{#or (is method "patch") (is method "post") (is method "put")}}
     //
     // BODY parameter
     //
-    public required {{getPayloadTypeFromRequest request}} Body { get; set; }
+    //public required {{getPayloadTypeFromRequest request}} Body { get; set; }
     {{/or}}
 
     // TODO
@@ -123,6 +145,7 @@ public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}
     //m2.Path = "/product/shopper-products/v1/organizations/f_ecom_zzte_053/categories/root";
     //m2.Query = "levels=1&locale=en&siteId=RefArch";
     //m2.Scheme = "https";
+    return await Task.FromResult(new Response());
 }
 
 
