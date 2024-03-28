@@ -88,3 +88,4 @@ src/@commerce-apps
 apis-dotnet
 dotnet-apis
 src/__node_modules__
+dotnet-templates/__operations.cs.hbs.

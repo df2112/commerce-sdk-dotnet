@@ -5,43 +5,9 @@
 // *****************************************************************************************
 {{#each model.encodes.endPoints}}
   {{#each operations}}
-/**
-*
-* TODO DAVE: Rewrite this for dotnet
-*
+/*
 {{{formatForTsDoc description}}}
-*
-* @param options - An object containing the options for this method.
-*
-* @param parameters - An object containing the parameters for this method.
-{{#each ../parameters }}
-*     PATH @param {{{name}}} - {{#if (getValue description)}}{{{getValue description}}}{{/if}}
-{{/each}}
-{{#each request/queryParameters}}
-*     QUERY @param {{{name}}} - {{#if (getValue description)}}{{{getValue description}}}{{/if}}
-{{/each}}
-*
-* @param headers - An object literal of key value pairs of the headers to be sent with this request.
-{{#each request/headers}}
-*     HEADER {{{name}}} - {{#if (getValue description)}}{{{getValue description}}}{{/if}}
-{{/each}}
-{{#or (is method "patch") (is method "post") (is method "put")}}
-*
-* @param body - The data to send as the request body.
-*      BODY {{getPayloadTypeFromRequest request}}
-*      MEDIA TYPE {{getMediaTypeFromRequest request}}
-{{/or}}
-*
-* @param rawResponse - Set to true to return entire Response object instead of DTO.
-*
-* @returns 
-*       Promise<Response> if rawResponse is true
-*       Promise<{{getReturnTypeFromOperation this}}> otherwise.
-* {{#if (eq (lowercase @root.metadata.categories.[CC Version Status].[0]) "beta")}}
-* @beta
-* {{/if}}
 */
-
 public class {{name}}Parameters
 {
     {{!-- PATH parameters --}}
@@ -79,9 +45,9 @@ public class {{name}}Parameters
 
 {{!-- public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null) --}}
 {{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}
-public async Task<Response> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null)
+public async Task<HttpResponseMessage> {{name}}DumDum({{name}}Parameters options)
 {{else}}
-public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null)
+public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}DumDum({{name}}Parameters options)
 {{/if}}
 {
     var request = new HttpRequestMessage();
@@ -136,8 +102,7 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
     request.Headers.{{{name}}} = new AuthenticationHeaderValue("TODO: Bearer or Basic???", options.{{{name}}});
-    // additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
-    // additionalHeaders["Content-Type"] = "application/x-www-form-urlencoded";
+    request.Headers.UserAgent.ParseAdd(ShopperLogin.USER_AGENT_VALUE);
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
@@ -166,128 +131,25 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
     //
     using (var client = new HttpClient())
     {
-        var response = await client.SendAsync(request);
+        var rawResponse = await client.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
+        if (rawResponse.IsSuccessStatusCode)
         {
-            string content = await response.Content.ReadAsStringAsync();
+{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}
+            return rawResponse;
+{{else}}
+            string content = await rawResponse.Content.ReadAsStringAsync();
             var jsonSerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
             {{getReturnTypeFromOperation this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperation this}}>(content, jsonSerializerOptions)!;
-            return typedResponse;
+            return (typedResponse, rawResponse);
+{{/if}}
         }
         else
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new HttpRequestException($"Request failed with status code {response.StatusCode}: {errorContent}");
+            var errorContent = await rawResponse.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Request failed with status code {rawResponse.StatusCode}: {errorContent}");
         }
     }
 }
-
-public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
-{
-    var optionParams = options.Parameters;
-    var configParams = ClientConfig.Parameters;
-
-    //
-    // Path parameters
-    //
-    Dictionary<string, string> pathParams = new Dictionary<string, string>();
-
-    {{#each ../parameters}}
-    if (optionParams != null && !string.IsNullOrEmpty(optionParams.{{{getValueCSharp name}}}))
-    {
-        pathParams["{{{name}}}"] = optionParams.{{{getValueCSharp name}}};
-    }
-    {{! if it is a common path parameter, fallback to client config for undefined }}
-    {{#if (isCommonPathParameter name)}} 
-    else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
-    {
-        pathParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
-    } 
-    {{/if}}
-    {{/each}}     
-
-    //
-    // Query parameters - Standard
-    //
-    Dictionary<string, object> queryParams = new Dictionary<string, object>();
-    
-    if (optionParams != null && optionParams.AdditionalProperties != null)
-    {
-    {{#each request.queryParameters}}
-        if (optionParams.AdditionalProperties.TryGetValue("{{{name}}}", out string? {{{getValueCSharp name}}}Value))
-        {
-            queryParams["{{{name}}}"] = {{{getValueCSharp name}}}Value;
-        }
-    {{! if it is a common query parameter, fallback to client config for undefined }}
-    {{#if (isCommonQueryParameter name)}} 
-        else if (configParams != null && !string.IsNullOrEmpty(configParams.{{{getValueCSharp name}}}))
-        {
-            queryParams["{{{name}}}"] = configParams.{{{getValueCSharp name}}};
-        }
-    {{/if}}
-    {{#if (is required "true")}}
-        else
-        {
-            throw new Exception("Missing required query parameter: {{{name}}}");
-        }
-    {{/if}}
-    {{#unless @last}}
-
-    {{/unless}}
-    {{/each}}
-    }
-    
-    //
-    // Query parameters - Custom
-    //
-    if (optionParams != null && optionParams.AdditionalProperties != null)
-    {
-        foreach (var entry in optionParams.AdditionalProperties)
-        {
-            if (entry.Key.StartsWith("c_") && entry.Value != null)
-            {
-                queryParams[entry.Key] = entry.Value;
-            }
-            else if (!queryParams.ContainsKey(entry.Key) && !pathParams.ContainsKey(entry.Key))
-            {
-                Console.WriteLine($"Invalid Parameter: {entry.Key}");
-            }
-        }
-    }
-    
-    //
-    // Headers
-    //
-    var baseHeaders = FetchHelper.GetHeaders(options);
-    var additionalHeaders = new Dictionary<string, string>();
-    additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
-    {{#if (isRequestWithPayload request)}}
-    additionalHeaders["Content-Type"] = "{{{getMediaTypeFromRequest request}}}";
-    {{/if}}
-    var mergedHeaders = FetchHelper.MergeHeaders([baseHeaders.Headers, additionalHeaders]);        
-
-    // DAVE TODO - THE ORIGINAL SF IDEA IS A MESS
-
-    var fetchOptionsInit = new SdkFetchOptions{
-        Client = this,
-        RawResponse = rawResponse,
-        Path = "{{../path}}",
-        PathParameters = new PathParameters(pathParams),
-        QueryParameters = new QueryParameters(queryParams),
-        Headers = mergedHeaders{{#or (is method "patch") (is method "post") (is method "put")}}, 
-        // Body = options.Body{{/or}},
-        // FetchOptions = options.FetchOptions
-    };
-
-    {{#or (is method "patch") (is method "post") (is method "put")}}
-    var fetchOptionsFinal = new SdkFetchOptionsWithBody(fetchOptionsInit) {};
-    {{else}}
-    var fetchOptionsFinal = new SdkFetchOptionsNoBody(fetchOptionsInit) {};
-    {{/or}}
-
-    return await FetchHelper.{{getValueCSharp method}}(fetchOptionsFinal);
-}
-
   {{/each}}
 {{/each}}
