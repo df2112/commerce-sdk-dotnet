@@ -107,6 +107,7 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
     {{!-- (2) QUERY parameters --}}
 {{#each request.queryParameters}}
 {{#if @first}}
+
     //
     // URI QUERY parameters
     //
@@ -127,7 +128,8 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
     request.RequestUri = uriBuilder.Uri;
     {{!-- (3) HEADER parameters --}}
 {{#each request.headers}}
-{{#if @first}}    
+{{#if @first}}
+
     //
     // HEADER parameters
     //
@@ -139,6 +141,7 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
+
     //
     // BODY parameter
     //
@@ -160,10 +163,26 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
 {{/if}}
 {{/or}}
 
-    // TODO
-    return await Task.FromResult(new Response());
-}
+    //
+    // Call the API
+    //
+    using (var client = new HttpClient())
+    {
+        var response = await client.SendAsync(request);
 
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperation this}}>(content);
+            return typedResponse;
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Request failed with status code {response.StatusCode}: {errorContent}");
+        }
+    }
+}
 
 public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}(Options options, bool? rawResponse = null)
 {
