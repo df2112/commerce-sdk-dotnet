@@ -85,11 +85,13 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
 {{/if}}
 {
     var request = new HttpRequestMessage();
-    var builder = new UriBuilder();
+    request.Method = HttpMethod.{{getValueCSharp method}};
+
     {{!-- (1) PATH parameters --}}
     //
-    // PATH parameters
+    // URI PATH parameters
     //
+    var uriBuilder = new UriBuilder();
     var pathTemplate = "{{../path}}";
 {{#each ../parameters }}
 {{#if @first}}
@@ -101,14 +103,14 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
     };
 {{/if}}
 {{/each}}
-    string path = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
+    uriBuilder.Path = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     {{!-- (2) QUERY parameters --}}
 {{#each request.queryParameters}}
 {{#if @first}}
     //
-    // QUERY parameters
+    // URI QUERY parameters
     //
-    var query = HttpUtility.ParseQueryString(builder.Query);
+    var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 {{/if}}
     query["{{{name}}}"] = options.{{{getValueCSharp name}}};
 {{#if @last}}
@@ -119,9 +121,10 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
             query[pair.Key] = pair.Value;
         }
     }
-    builder.Query = query.ToString();
+    uriBuilder.Query = query.ToString();
 {{/if}}
 {{/each}}
+    request.RequestUri = uriBuilder.Uri;
     {{!-- (3) HEADER parameters --}}
 {{#each request.headers}}
 {{#if @first}}    
