@@ -134,20 +134,33 @@ public async Task<{{getReturnTypeFromOperation this}}> {{name}}DumDum({{name}}Pa
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
     request.Headers.{{{name}}} = new AuthenticationHeaderValue("TODO: Bearer or Basic???", options.{{{name}}});
+    // additionalHeaders[USER_AGENT_HEADER] = USER_AGENT_VALUE;
+    // additionalHeaders["Content-Type"] = "application/x-www-form-urlencoded";
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
     //
     // BODY parameter
     //
-    //public required {{getPayloadTypeFromRequest request}} Body { get; set; }
+    {{!-- *      MEDIA TYPE {{getMediaTypeFromRequest request}} --}}
+{{#if (eq (getMediaTypeFromRequest request) "application/json")}}
+    request.Content = new StringContent(JsonConvert.SerializeObject(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
+{{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
+    var keyValues = new List<KeyValuePair<string, string>>();
+    foreach (var prop in typeof({{getPayloadTypeFromRequest request}}).GetProperties())
+    {
+        if (prop.GetValue(options.Body, null) != null)
+        {
+            keyValues.Add(new KeyValuePair<string, string>(prop.Name, prop.GetValue(options.Body, null).ToString()));
+        }
+    }
+    request.Content = new FormUrlEncodedContent(keyValues);
+{{else}}
+    throw new Exception("Unsupported media type: {{getMediaTypeFromRequest request}}");
+{{/if}}
 {{/or}}
 
     // TODO
-    //var m2 = new UriBuilder();
-    //m2.Path = "/product/shopper-products/v1/organizations/f_ecom_zzte_053/categories/root";
-    //m2.Query = "levels=1&locale=en&siteId=RefArch";
-    //m2.Scheme = "https";
     return await Task.FromResult(new Response());
 }
 
