@@ -139,7 +139,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
 
         if (rawResponse.IsSuccessStatusCode)
         {
-{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}
+{{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
             return rawResponse;
 {{else}}
             string content = await rawResponse.Content.ReadAsStringAsync();
