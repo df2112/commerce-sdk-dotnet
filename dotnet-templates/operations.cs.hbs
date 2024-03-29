@@ -144,7 +144,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
 {{else}}
             string content = await rawResponse.Content.ReadAsStringAsync();
             var jsonSerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
-            {{getReturnTypeFromOperation this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperation this}}>(content, jsonSerializerOptions)!;
+            {{getReturnTypeFromOperationCSharp this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperationCSharp this}}>(content, jsonSerializerOptions)!;
             return (typedResponse, rawResponse);
 {{/if}}
         }
