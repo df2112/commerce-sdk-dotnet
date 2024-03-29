@@ -31,7 +31,8 @@ public class {{name}}Parameters
     {{#each request.headers}}
     {{#if @first}}
     
-    // HEADER parameters{{/if}}
+    // HEADER parameters
+    {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
     public string? {{{name}}} { get; set; }
     {{/each}}
@@ -99,10 +100,14 @@ public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpRespon
     //
     // HEADER parameters
     //
+    request.Headers.UserAgent.ParseAdd(ShopperLogin.USER_AGENT_VALUE);
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
+{{#if (eq (getValue name) "_sfdc_client_auth")}}
+    request.Headers.Add("{{{name}}}", options.{{{name}}});
+{{else}}
     request.Headers.{{{name}}} = new AuthenticationHeaderValue("TODO: Bearer or Basic???", options.{{{name}}});
-    request.Headers.UserAgent.ParseAdd(ShopperLogin.USER_AGENT_VALUE);
+{{/if}}
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
