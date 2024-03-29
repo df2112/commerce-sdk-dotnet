@@ -44,11 +44,10 @@ public class {{name}}Parameters
     {{/or}}
 }
 
-{{!-- public async Task<{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}Response{{else}}{{getReturnTypeFromOperation this}}{{/if}}> {{name}}DumDum({{name}}Parameters options, bool? rawResponse = null) --}}
-{{#if (equalsCSharp (getReturnTypeFromOperation this) 'void')}}
-public async Task<HttpResponseMessage> {{name}}DumDum({{name}}Parameters options)
+{{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
+public async Task<HttpResponseMessage> {{name}}({{name}}Parameters options)
 {{else}}
-public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}DumDum({{name}}Parameters options)
+public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}({{name}}Parameters options)
 {{/if}}
 {
     var request = new HttpRequestMessage();

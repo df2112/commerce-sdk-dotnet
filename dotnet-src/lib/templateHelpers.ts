@@ -7,6 +7,7 @@
 
 import { commonParameterPositions } from "@commerce-apps/core";
 import { amf, generate } from "@commerce-apps/raml-toolkit";
+import { getResponsesFromPayload, getTypeFromPayload } from "@commerce-apps/raml-toolkit/lib/generate/utils";
 
 /**
  * Given an individual type or an array of types in the format Array\<Foo | Baa\>
@@ -226,3 +227,33 @@ exports.equalsCSharp = (arg1, arg2) => {
 exports.upperCamelCaseCSharp = (name) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
+
+/**
+ * Get the return type info of an operation.
+ *
+ * @param operation - An AMF operation
+ *
+ * @returns a string for the data type returned by the successful operation
+ */
+exports.getReturnTypeFromOperationCSharp = (
+  operation: amf.model.domain.Operation
+): string => {
+  const okResponses = getResponsesFromPayload(operation);
+  const dataTypes: string[] = [];
+
+  okResponses.forEach((res) => {
+    if (res.payloads.length > 0) {
+      dataTypes.push(getTypeFromPayload(res.payloads[0]));
+    } else {
+      dataTypes.push("void");
+    }
+  });
+
+  if (okResponses.length === 0) {
+    dataTypes.push("void");
+  }
+
+  let dataTypesUnique = [...new Set(dataTypes)];
+
+  return dataTypesUnique.join(" | ");
+};
