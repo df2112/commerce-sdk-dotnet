@@ -86,6 +86,19 @@ export const formatForTsDoc = (str: string): string => {
   return collapsedLeadingWhitespace;
 };
 
+export const formatForCSharpXmlDoc = (str: string): string => {
+  // Double escaped newlines are replaced with real newlines
+  const newlinesUnescaped = str.toString().replace(/\\n/g, "\n");
+  // Double escaped tabs are replaced with four spaces to match C# indentation
+  const tabsUnescaped = newlinesUnescaped.replace(/\\t/g, "    ");
+  // Split the string into lines, prepend each line with "/// ", and join them back together
+  const linesWithComments = tabsUnescaped
+    .split("\n")
+    .map(line => "/// " + line)
+    .join("\n");
+
+  return linesWithComments;
+};
 /**
  * Checks if a path parameter is one of the set that are configurable at the client level
  *

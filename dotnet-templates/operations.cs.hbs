@@ -5,9 +5,10 @@
 // *****************************************************************************************
 {{#each model.encodes.endPoints}}
   {{#each operations}}
-/*
-{{{formatForTsDoc description}}}
-*/
+
+/// <summary>
+{{{formatForCSharpXmlDoc description}}}
+/// </summary>
 public class {{name}}Parameters
 {
     {{!-- PATH parameters --}}
