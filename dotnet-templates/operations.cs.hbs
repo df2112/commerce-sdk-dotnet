@@ -61,14 +61,14 @@ public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpRespon
     var uriBuilder = new UriBuilder();
     var pathTemplate = "{{../path}}";
 {{#each ../parameters }}
-{{#if @first}}
+    {{#if @first}}
     var pathReplacements = new Dictionary<string, string>
     {
     {{/if}}
         { "{{{name}}}", options.{{{getValueCSharp name}}} }{{#unless @last}},{{/unless}}
-    {{#if @first}}
+    {{#if @last}}
     };
-{{/if}}
+    {{/if}}
 {{/each}}
     uriBuilder.Path = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     {{!-- (2) QUERY parameters --}}
@@ -100,7 +100,7 @@ public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpRespon
     //
     // HEADER parameters
     //
-    request.Headers.UserAgent.ParseAdd(ShopperLogin.USER_AGENT_VALUE);
+    request.Headers.UserAgent.ParseAdd(USER_AGENT_VALUE);
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
 {{#if (eq (getValue name) "_sfdc_client_auth")}}
@@ -117,7 +117,7 @@ public async Task<({{getReturnTypeFromOperation this}} typedResponse, HttpRespon
     //
     {{!-- *      MEDIA TYPE {{getMediaTypeFromRequest request}} --}}
 {{#if (eq (getMediaTypeFromRequest request) "application/json")}}
-    request.Content = new StringContent(JsonConvert.SerializeObject(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
+    request.Content = new StringContent(JsonSerializer.Serialize(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
 {{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
     var keyValues = new List<KeyValuePair<string, string>>();
     foreach (var prop in typeof({{getPayloadTypeFromRequest request}}).GetProperties())
