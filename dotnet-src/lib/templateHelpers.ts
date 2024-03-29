@@ -208,10 +208,9 @@ exports.getValueCSharp = (name) => {
     return null;
   }
 
-  //let valuePascalCase = value.charAt(0).toUpperCase() + value.slice(1);
-  // return value == null 
-  //   ? null 
-  //   : `${value.charAt(0).toUpperCase() + value.slice(1)}`;
+  if (value === "status") {
+    value = "StatusEnum";
+  }
 
   return value
     //.toLowerCase()
