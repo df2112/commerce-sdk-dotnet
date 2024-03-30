@@ -6,9 +6,6 @@
 {{#each model.encodes.endPoints}}
   {{#each operations}}
 
-/// <summary>
-{{{formatForCSharpXmlDoc description}}}
-/// </summary>
 public class {{name}}Parameters
 {
     {{!-- PATH parameters --}}
@@ -49,6 +46,9 @@ public class {{name}}Parameters
     {{/or}}
 }
 
+/// <summary>
+{{{formatForCSharpXmlDoc description}}}
+/// </summary>
 {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
 public async Task<HttpResponseMessage> {{name}}({{name}}Parameters options)
 {{else}}
