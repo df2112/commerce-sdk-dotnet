@@ -35,7 +35,11 @@ public class {{name}}Parameters
     // HEADER parameters
     {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
+    {{#if (eq (getValue name) "Authorization")}}
+    public AuthenticationHeaderValue? {{{name}}} { get; set; }
+    {{else}}
     public string? {{{name}}} { get; set; }
+    {{/if}}
     {{/each}}
     {{!-- BODY parameter --}}
     {{#or (is method "patch") (is method "post") (is method "put")}}
@@ -103,11 +107,11 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     request.Headers.UserAgent.ParseAdd(USER_AGENT_VALUE);
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
-{{#if (eq (getValue name) "_sfdc_client_auth")}}
+{{!-- {{#if (eq (getValue name) "_sfdc_client_auth")}}
     request.Headers.Add("{{{name}}}", options.{{{name}}});
-{{else}}
-    request.Headers.{{{name}}} = new AuthenticationHeaderValue("TODO: Bearer or Basic???", options.{{{name}}});
-{{/if}}
+{{else}} --}}
+    request.Headers.{{{name}}} = options.{{{name}}};
+{{!-- {{/if}} --}}
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
