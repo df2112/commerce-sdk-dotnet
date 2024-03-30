@@ -107,11 +107,11 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     //request.Headers.UserAgent.ParseAdd(USER_AGENT_VALUE);
 {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
-{{!-- {{#if (eq (getValue name) "_sfdc_client_auth")}}
+{{#if (eq (getValue name) "_sfdc_client_auth")}}
     request.Headers.Add("{{{name}}}", options.{{{name}}});
-{{else}} --}}
+{{else}}
     request.Headers.{{{name}}} = options.{{{name}}};
-{{!-- {{/if}} --}}
+{{/if}}
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
