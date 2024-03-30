@@ -7,6 +7,7 @@
 
 import { commonParameterPositions } from "@commerce-apps/core";
 import { amf, generate } from "@commerce-apps/raml-toolkit";
+import { getResponsesFromPayload, getTypeFromPayload } from "@commerce-apps/raml-toolkit/lib/generate/utils";
 
 /**
  * Given an individual type or an array of types in the format Array\<Foo | Baa\>
@@ -85,6 +86,19 @@ export const formatForTsDoc = (str: string): string => {
   return collapsedLeadingWhitespace;
 };
 
+export const formatForCSharpXmlDoc = (str: string): string => {
+  // Double escaped newlines are replaced with real newlines
+  const newlinesUnescaped = str.toString().replace(/\\n/g, "\n");
+  // Double escaped tabs are replaced with four spaces to match C# indentation
+  const tabsUnescaped = newlinesUnescaped.replace(/\\t/g, "    ");
+  // Split the string into lines, prepend each line with "/// ", and join them back together
+  const linesWithComments = tabsUnescaped
+    .split("\n")
+    .map(line => "/// " + line)
+    .join("\n");
+
+  return linesWithComments;
+};
 /**
  * Checks if a path parameter is one of the set that are configurable at the client level
  *
@@ -142,14 +156,117 @@ export const isShopperAPI = (name: string): boolean => {
 exports.getTypeFromPropertyCSharp = (property) => {
   const returnType = generate.handlebarsAmfHelpers.getTypeFromProperty(property);
 
-  switch (returnType) {
-    case "any":
-      return "DAVE_TO_FIX";
-    case "boolean":
-      return "bool";
-    case "number":
-      return "int";
-    default:
-      return returnType;
+  // switch (returnType) {
+  //   case "any":
+  //     return "dynamic";
+  //   case "Array<any>":
+  //     return "dynamic[]";
+  //   case "Array<object>":
+  //     return "object[]";
+  //   case "Array<Filter>":
+  //     return "Filter[]";
+  //   case "Array<PropertyValueDefinition>":
+  //     return "PropertyValueDefinition[]";
+  //   case "Array<Sort>":
+  //     return "Sort[]";
+  //   case "Array<string>":
+  //     return "string[]";
+  //   case "boolean":
+  //     return "bool";
+  //   case "number":
+  //     return "int";
+  //   default:
+  //     return returnType;
+  // }
+
+  if (returnType.startsWith("Array<") && returnType.endsWith(">")) {
+    const elementType = returnType.slice(6, -1);  // Extract the element type
+
+    switch (elementType) {
+      case "any":
+        return "dynamic[]";
+      default:
+        return elementType + "[]";  // Default to the element type followed by []
+    }
+  } else {
+    switch (returnType) {
+      case "any":
+        return "dynamic";
+      case "boolean":
+        return "bool";
+      case "number":
+        return "int";
+      case "object":
+        return "Dictionary<string, dynamic>";
+      default:
+        return returnType;
+    }
   }
+};
+
+/**
+ * Get value from an AMF field.
+ *
+ * @param name - The field to extract the value from
+ *
+ * @returns The string of the value
+ */
+exports.getValueCSharp = (name) => {
+  let value;
+
+  if (typeof name?.value === "function") {
+    value = name.value();
+  }
+
+  if (value == null) {
+    return null;
+  }
+
+  if (value === "status") {
+    value = "StatusEnum";
+  }
+
+  return value
+    //.toLowerCase()
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+};
+
+exports.equalsCSharp = (arg1, arg2) => {
+  return arg1 === arg2;
+}
+
+exports.upperCamelCaseCSharp = (name) => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+/**
+ * Get the return type info of an operation.
+ *
+ * @param operation - An AMF operation
+ *
+ * @returns a string for the data type returned by the successful operation
+ */
+exports.getReturnTypeFromOperationCSharp = (
+  operation: amf.model.domain.Operation
+): string => {
+  const okResponses = getResponsesFromPayload(operation);
+  const dataTypes: string[] = [];
+
+  okResponses.forEach((res) => {
+    if (res.payloads.length > 0) {
+      dataTypes.push(getTypeFromPayload(res.payloads[0]));
+    } else {
+      dataTypes.push("void");
+    }
+  });
+
+  if (okResponses.length === 0) {
+    dataTypes.push("void");
+  }
+
+  let dataTypesUnique = [...new Set(dataTypes)];
+
+  return dataTypesUnique.join(" | ");
 };

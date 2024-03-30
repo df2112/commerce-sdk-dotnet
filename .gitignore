@@ -1,3 +1,5 @@
+# DAVE exclusions!
+!node_modules/@commerce-apps/raml-toolkit/lib/generate/handlebarsAmfHelpers.js
 # Logs
 logs
 *.log
@@ -67,6 +69,7 @@ dist
 .idea
 
 # Release folders
+dotnet-renderedTemplates
 renderedTemplates
 .vscode
 updateApisTmp
@@ -80,3 +83,9 @@ reports*
 
 #Not committing this, not needed and causes issues with circleCI
 testIntegration/package-lock.json
+src/@commerce-apps
+
+apis-dotnet
+dotnet-apis
+src/__node_modules__
+dotnet-templates/__operations.cs.hbs.

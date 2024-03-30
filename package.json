@@ -18,6 +18,9 @@
     "LICENSE.txt"
   ],
   "scripts": {
+    "dotnet-build": "npm run dotnet-clean && npm run dotnet-render",
+    "dotnet-clean": "rm -rf dotnet-renderedTemplates",
+    "dotnet-render": "ts-node dotnet-src/generate.ts",
     "backupApis": "rm -rf updateApisTmp && mkdir updateApisTmp && mv apis updateApisTmp/oldApis",
     "build": "npm run clean && npm run renderTemplates && tsc && eslint dist --ext .ts,.js --quiet --fix",
     "clean": "rm -rf renderedTemplates dist",
@@ -29,9 +32,7 @@
     "lint": "npm run lint:dev -- --quiet",
     "lint:dev": "sort-package-json && eslint . --ext .ts --fix",
     "prepack": "npm run build",
-    "prepare": "snyk protect",
     "renderTemplates": "ts-node src/generate.ts",
-    "snyk:auth": "snyk auth",
     "pretest": "npm run lint && npm run depcheck",
     "test": "nyc mocha \"src/**/*.test.ts\"",
     "test:ci": "npm test -- --reporter=xunit --reporter-options output=./reports/generator.xml",
@@ -75,7 +76,6 @@
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
     "sinon": "^9.2.4",
-    "snyk": "^1.836.0",
     "sort-package-json": "^1.53.1",
     "ts-node": "^10.9.2",
     "typedoc": "^0.17.8",
@@ -86,6 +86,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "2a6031f5f57c4ba5df8bfb5c4ca42b2631befe58",
-  "snyk": true
+  "gitHead": "2a6031f5f57c4ba5df8bfb5c4ca42b2631befe58"
 }

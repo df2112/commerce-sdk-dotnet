@@ -8,14 +8,12 @@
 import path from "path";
 import { generate } from "@commerce-apps/raml-toolkit";
 import { registerHelpers, registerPartials, setupApis } from "./lib/utils";
-import { copySync } from "fs-extra";
 
 const API_DIRECTORY = path.resolve(
-  process.env.COMMERCE_SDK_INPUT_DIR || `${__dirname}/../apis`
+  process.env.COMMERCE_SDK_INPUT_DIR || `${__dirname}/../dotnet-apis`
 );
 
-const OUTPUT_DIRECTORY = path.join(__dirname, "../renderedTemplates/helpers");
-const HELPERS_DIRECTORY = path.join(__dirname, "../src/static/helpers");
+const OUTPUT_DIRECTORY = path.join(__dirname, "../dotnet-renderedTemplates/helpers");
 
 registerHelpers();
 registerPartials();
@@ -23,11 +21,17 @@ registerPartials();
 console.log(`Creating SDK for ${API_DIRECTORY}`);
 
 const skipTestFiles = (src: string): boolean => !/\.test\.[a-z]+$/.test(src);
-copySync(HELPERS_DIRECTORY, OUTPUT_DIRECTORY, { filter: skipTestFiles });
 
-setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../renderedTemplates`))
+// setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../dotnet-renderedTemplates`))
+//   .then((apis: generate.ApiMetadata) => {
+//     console.log("Generate SDK - START");
+//     apis.render()
+//       .then(() => console.log("Generate SDK - FINISH"))
+//   });
+
+setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../../Salesforce.CommerceCloud`))
   .then((apis: generate.ApiMetadata) => {
-    console.log("Generate SDK - START");
+    console.log("Generate SDK directly in Class LIbrary - START");
     apis.render()
-      .then(() => console.log("Generate SDK - FINISH"))
+      .then(() => console.log("Generate SDK directly in Class LIbrary - FINISH"))
   });
