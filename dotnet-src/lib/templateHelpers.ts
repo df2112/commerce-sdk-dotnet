@@ -270,3 +270,23 @@ exports.getReturnTypeFromOperationCSharp = (
 
   return dataTypesUnique.join(" | ");
 };
+
+/**
+ * Get the baseUri's variables from an AMF model.
+ *
+ * Note: TypeScript will not allow access to the data without the proper cast to
+ * a WebApi type.
+ *
+ * @param property - A model from the the AMF parser
+ *
+ * @returns the base URI of the model
+ */
+exports.getBaseUriVariablesFromDocument = (property: amf.model.document.BaseUnitWithEncodesModel) => {
+  if (property && property.encodes) {
+    let variables = (property.encodes as amf.model.domain.WebApi).servers[0].variables;
+    let result = variables.map((x) => x.name.value());
+    return result;
+  }
+
+  return "";
+};

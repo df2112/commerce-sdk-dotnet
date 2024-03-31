@@ -86,13 +86,22 @@ public class {{name.upperCamelCase}}Client : BaseClient
 {
     public const string USER_AGENT_HEADER = "user-agent";
     public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
+    public required string BASE_URI { get; set; }
 
     public {{name.upperCamelCase}}Client(ClientConfig config) : base(config)
     {
-        {{!-- if (string.IsNullOrEmpty(config.BaseUri))
+        var pathTemplate = "{{getBaseUriFromDocument model}}";
+        {{#each (getBaseUriVariablesFromDocument model)}}
+        {{#if @first}}
+        var pathReplacements = new Dictionary<string, string>
         {
-            this.ClientConfig.BaseUri = "{{getBaseUriFromDocument model}}";
-        } --}}
+        {{/if}}
+            { "{{{this}}}", config.Parameters.{{{upperCamelCaseCSharp this}}} }{{#unless @last}},{{/unless}}
+        {{#if @last}}
+        };
+        {{/if}}
+        {{/each}}
+        BASE_URI = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     }
 
     {{> operationsPartial-cs}}

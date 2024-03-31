@@ -62,7 +62,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     //
     // URI PATH parameters
     //
-    var uriBuilder = new UriBuilder();
+    var uriBuilder = new UriBuilder(BASE_URI);
     var pathTemplate = "{{../path}}";
 {{#each ../parameters }}
     {{#if @first}}
@@ -77,15 +77,15 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     uriBuilder.Path = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     {{!-- (2) QUERY parameters --}}
 {{#each request.queryParameters}}
-{{#if @first}}
+    {{#if @first}}
 
     //
     // URI QUERY parameters
     //
     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-{{/if}}
+    {{/if}}
     query["{{{name}}}"] = options.{{{getValueCSharp name}}};
-{{#if @last}}
+    {{#if @last}}
     if (options.Custom != null)
     {
         foreach (var pair in options.Custom)
@@ -94,24 +94,24 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
         }
     }
     uriBuilder.Query = query.ToString();
-{{/if}}
+    {{/if}}
 {{/each}}
     request.RequestUri = uriBuilder.Uri;
     {{!-- (3) HEADER parameters --}}
 {{#each request.headers}}
-{{#if @first}}
+    {{#if @first}}
 
     //
     // HEADER parameters
     //
     //request.Headers.UserAgent.ParseAdd(USER_AGENT_VALUE);
-{{/if}}
+    {{/if}}
     {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
-{{#if (eq (getValue name) "_sfdc_client_auth")}}
+    {{#if (eq (getValue name) "_sfdc_client_auth")}}
     request.Headers.Add("{{{name}}}", options.{{{name}}});
-{{else}}
+    {{else}}
     request.Headers.{{{name}}} = options.{{{name}}};
-{{/if}}
+    {{/if}}
 {{/each}}
     {{!-- (4) BODY parameter --}}
 {{#or (is method "patch") (is method "post") (is method "put")}}
@@ -120,9 +120,9 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     // BODY parameter
     //
     {{!-- *      MEDIA TYPE {{getMediaTypeFromRequest request}} --}}
-{{#if (eq (getMediaTypeFromRequest request) "application/json")}}
+    {{#if (eq (getMediaTypeFromRequest request) "application/json")}}
     request.Content = new StringContent(JsonSerializer.Serialize(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
-{{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
+    {{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
     var keyValues = new List<KeyValuePair<string, string>>();
     foreach (var prop in typeof({{getPayloadTypeFromRequest request}}).GetProperties())
     {
@@ -130,9 +130,9 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
         keyValues.Add(new KeyValuePair<string, string>(prop.Name, propValue));
     }
     request.Content = new FormUrlEncodedContent(keyValues);
-{{else}}
+    {{else}}
     throw new Exception("Unsupported media type: {{getMediaTypeFromRequest request}}");
-{{/if}}
+    {{/if}}
 {{/or}}
 
     //
