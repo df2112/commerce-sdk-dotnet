@@ -128,7 +128,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     foreach (var prop in typeof({{getPayloadTypeFromRequest request}}).GetProperties())
     {
         var propValue = prop.GetValue(options.Body, null)?.ToString() ?? string.Empty;
-        keyValues.Add(new KeyValuePair<string, string>(prop.Name, propValue));
+        keyValues.Add(new KeyValuePair<string, string>(ConvertPascalToSnakeCase(prop.Name), propValue));
     }
     request.Content = new FormUrlEncodedContent(keyValues);
     {{else}}
