@@ -6,7 +6,7 @@
 {{#each model.encodes.endPoints}}
   {{#each operations}}
 
-public class {{name}}Options
+public class {{getValueCSharp name}}Options
 {
     {{!-- PATH parameters --}}
     {{#each ../parameters }}
@@ -50,9 +50,9 @@ public class {{name}}Options
 {{{formatForCSharpXmlDoc description}}}
 /// </summary>
 {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
-public async Task<HttpResponseMessage> {{name}}({{name}}Options options)
+public async Task<HttpResponseMessage> {{name}}({{getValueCSharp name}}Options options)
 {{else}}
-public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}({{name}}Options options)
+public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}({{getValueCSharp name}}Options options)
 {{/if}}
 {
     var request = new HttpRequestMessage();

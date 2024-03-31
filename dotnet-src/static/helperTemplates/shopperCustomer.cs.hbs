@@ -32,8 +32,8 @@ public class ShopperCustomer
 
     public ShopperCustomer(ClientConfig clientConfig)
     {
-        _client = new ShopperCustomersClient(clientConfig);
-        _loginClient = new ShopperLoginClient(clientConfig);
+        _client = new ShopperCustomersClient(clientConfig.Parameters.ShortCode, clientConfig.Parameters.Version);
+        _loginClient = new ShopperLoginClient(clientConfig.Parameters.ShortCode, clientConfig.Parameters.Version);
     }
 
     {{!-- public async Task<ShopperToken<Customer>> GetShopperToken(dynamic body)
