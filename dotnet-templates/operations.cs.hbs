@@ -26,17 +26,13 @@ public class {{getValueCSharp name}}Options
     {{/if}}
     {{/each}}
     {{!-- HEADER parameters --}}
-    {{#each request.headers}}
-    {{#if @first}}
     
     // HEADER parameters
-    {{/if}}
-    {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
-    {{#if (eq (getValue name) "Authorization")}}
-    public AuthenticationHeaderValue? {{{name}}} { get; set; }
-    {{else}}
+    public required AuthenticationHeaderValue Authorization { get; set; }
+    {{#each request.headers}}
+    {{#unless (eq (getValue name) "Authorization")}}
     public string? {{{name}}} { get; set; }
-    {{/if}}
+    {{/unless}}
     {{/each}}
     {{!-- BODY parameter --}}
     {{#or (is method "patch") (is method "post") (is method "put")}}
@@ -98,20 +94,19 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     {{/if}}
 {{/each}}
     request.RequestUri = uriBuilder.Uri;
-    {{!-- (3) HEADER parameters --}}
-{{#each request.headers}}
-    {{#if @first}}
 
+    {{!-- (3) HEADER parameters --}}
     //
     // HEADER parameters
     //
-    //request.Headers.UserAgent.ParseAdd(USER_AGENT_VALUE);
-    {{/if}}
-    {{!-- {{#if (getValue description)}}{{{getValue description}}}{{/if}} --}}
+    request.Headers.Authorization = options.Authorization;
+{{#each request.headers}}
     {{#if (eq (getValue name) "_sfdc_client_auth")}}
     request.Headers.Add("{{{name}}}", options.{{{name}}});
     {{else}}
+    {{#unless (eq (getValue name) "Authorization")}}
     request.Headers.{{{name}}} = options.{{{name}}};
+    {{/unless}}
     {{/if}}
 {{/each}}
     {{!-- (4) BODY parameter --}}
