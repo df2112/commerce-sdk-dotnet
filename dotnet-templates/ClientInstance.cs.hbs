@@ -86,7 +86,7 @@ public class {{name.upperCamelCase}}Client : BaseClient
 {
     public const string USER_AGENT_HEADER = "user-agent";
     public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
-    public required string BASE_URI { get; set; }
+    public string BASE_URI { get; set; }
 
     public {{name.upperCamelCase}}Client(ClientConfig config) : base(config)
     {
