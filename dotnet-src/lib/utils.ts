@@ -54,7 +54,7 @@ function addTemplates(
   outputBasePath: string
 ): generate.ApiMetadata {
 
-  const helperTemplateFileNames = ["shopperCustomer"];
+  const helperTemplateFileNames = [];
   helperTemplateFileNames.forEach((name: string) => {
     let namePascalCase = name.charAt(0).toUpperCase() + name.slice(1);
     apis.addTemplate(
