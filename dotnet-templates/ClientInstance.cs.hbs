@@ -88,7 +88,7 @@ public class {{name.upperCamelCase}}Client : BaseClient
     public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
     public string BASE_URI { get; set; }
 
-    public {{name.upperCamelCase}}Client(string shortCode, string organizationId) : base()
+    public {{name.upperCamelCase}}Client(ClientConfig config) : base(config)
     {{!-- public {{name.upperCamelCase}}Client(string shortCode, string organizationId) : base(config) --}}
     {
         var pathTemplate = "{{getBaseUriFromDocument model}}";
@@ -104,8 +104,8 @@ public class {{name.upperCamelCase}}Client : BaseClient
         {{/each}} --}}
         var pathReplacements = new Dictionary<string, string>
         {
-            { "shortCode", shortCode },
-            { "version", organizationId }
+            { "shortCode", config.ShortCode },
+            { "version", config.OrganizationId }
         };
         BASE_URI = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     }
