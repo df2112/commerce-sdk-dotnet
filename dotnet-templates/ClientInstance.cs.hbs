@@ -15,23 +15,6 @@ using System.Web;
 using CommerceApi.Base;
 
 namespace CommerceApi.{{name.upperCamelCase}};  
-{{#each dataTypes}}
-{{!-- TODO: Remove this special case handling once namespaced types are added --}}
-    {{#if (eq (getValue name) "ResourceBadRequest")}}
-        // This is a known deviation from the RAML definition, required due to limitations in
-        // the SDK generation. The full definition will be included in the next major release.
-        export type ResourceBadRequest = { [key: string]: any };
-    {{else if (or (isTypeDefinition this) (isArrayType this))}}
-{{> dtoPartial-cs typeDto=this}}
-    {{/if}}
-    {{#if (isTraitDefinition this)}}
-    {{#if (isAllowedTrait this) }}
-{{> dtoPartial-cs typeDto=this}}
-    {{else}}
-    {{log "Cannot convert invalid trait to type:" (getValue name) lavel="warn"}}
-    {{/if}}
-    {{/if}}
-{{/each}}
 
 /**
 * [{{{metadata.name}}}](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta={{{metadata.assetId}}}:Summary)

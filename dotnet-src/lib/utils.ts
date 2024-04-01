@@ -74,6 +74,15 @@ function addTemplates(
           `${api.name.upperCamelCase}.cs`
         )
       );
+      api.addTemplate(
+        path.join(TEMPLATE_DIRECTORY, "ClientInstanceTypes.cs.hbs"),
+        path.join(
+          outputBasePath,
+          child.name.upperCamelCase,
+          api.name.upperCamelCase,
+          `${api.name.upperCamelCase}Types.cs`
+        )
+      );
     });
   });
   return apis;
