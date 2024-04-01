@@ -22,10 +22,8 @@ namespace CommerceApi.{{name.upperCamelCase}};
         // the SDK generation. The full definition will be included in the next major release.
         export type ResourceBadRequest = { [key: string]: any };
     {{else if (or (isTypeDefinition this) (isArrayType this))}}
-{{!-- public record1 {{getValue name}}  --}}
 {{> dtoPartial-cs typeDto=this}}
     {{/if}}
-    {{!-- Traits are internal types and do not need to be exported --}}
     {{#if (isTraitDefinition this)}}
     {{#if (isAllowedTrait this) }}
 {{> dtoPartial-cs typeDto=this}}
@@ -89,23 +87,12 @@ public class {{name.upperCamelCase}}Client : BaseClient
     public string BASE_URI { get; set; }
 
     public {{name.upperCamelCase}}Client(ClientConfig config) : base(config)
-    {{!-- public {{name.upperCamelCase}}Client(string shortCode, string organizationId) : base(config) --}}
     {
         var pathTemplate = "{{getBaseUriFromDocument model}}";
-        {{!-- {{#each (getBaseUriVariablesFromDocument model)}}
-        {{#if @first}}
-        var pathReplacements = new Dictionary<string, string>
-        {
-        {{/if}}
-            { "{{{this}}}", config.Parameters.{{{upperCamelCaseCSharp this}}} }{{#unless @last}},{{/unless}}
-        {{#if @last}}
-        };
-        {{/if}}
-        {{/each}} --}}
         var pathReplacements = new Dictionary<string, string>
         {
             { "shortCode", config.ShortCode },
-            { "version", config.OrganizationId }
+            { "version", config.Version }
         };
         BASE_URI = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
     }
