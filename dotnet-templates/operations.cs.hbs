@@ -81,7 +81,10 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     //
     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
     {{/if}}
-    query["{{{name}}}"] = options.{{{getValueCSharp name}}};
+    if (!string.IsNullOrEmpty(options.{{{getValueCSharp name}}}))
+    {
+        query["{{{name}}}"] = options.{{{getValueCSharp name}}};
+    }
     {{#if @last}}
     if (options.Custom != null)
     {
