@@ -28,7 +28,7 @@ public class {{getValueCSharp name}}Options
     {{!-- HEADER parameters --}}
     
     // HEADER parameters
-    public required AuthenticationHeaderValue Authorization { get; set; }
+    public AuthenticationHeaderValue? Authorization { get; set; }
     {{#each request.headers}}
     {{#unless (eq (getValue name) "Authorization")}}
     public string? {{{name}}} { get; set; }
