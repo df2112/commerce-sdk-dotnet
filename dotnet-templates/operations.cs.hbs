@@ -143,8 +143,11 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     using (var client = new HttpClient())
     {
         var rawResponse = await client.SendAsync(request);
-
+{{#if (eq (name) "getAccessToken")}}
+        if (rawResponse.IsSuccessStatusCode || rawResponse.StatusCode == HttpStatusCode.SeeOther)
+{{else}}
         if (rawResponse.IsSuccessStatusCode)
+{{/if}}
         {
 {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
             return rawResponse;
