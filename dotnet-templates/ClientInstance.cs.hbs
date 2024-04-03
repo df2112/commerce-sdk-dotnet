@@ -78,7 +78,7 @@ public class {{name.upperCamelCase}}Client : BaseClient
             { "shortCode", config.ShortCode },
             { "version", config.Version }
         };
-        BASE_URI = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
+        BASE_URI = MapStringToProperty().Replace(pathTemplate, m => pathReplacements[m.Groups[1].Value]);
     }
 
     {{> operationsPartial-cs}}

@@ -70,7 +70,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     };
     {{/if}}
 {{/each}}
-    string operationPath = Regex.Replace(pathTemplate, "{(.*?)}", m => pathReplacements[m.Groups[1].Value]);
+    string operationPath = MapStringToProperty().Replace(pathTemplate, m => pathReplacements[m.Groups[1].Value]);
     uriBuilder.Path = uriBuilder.Path.TrimEnd('/') + '/' + operationPath;
     {{!-- (2) QUERY parameters --}}
 {{#each request.queryParameters}}
