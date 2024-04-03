@@ -46,9 +46,9 @@ public class {{getValueCSharp name}}Options
 {{{formatForCSharpXmlDoc description}}}
 /// </summary>
 {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
-public async Task<HttpResponseMessage> {{name}}({{getValueCSharp name}}Options options)
+public async Task<HttpResponseMessage> {{getValueCSharp name}}({{getValueCSharp name}}Options options)
 {{else}}
-public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, HttpResponseMessage rawResponse)> {{name}}({{getValueCSharp name}}Options options)
+public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, HttpResponseMessage rawResponse)> {{getValueCSharp name}}({{getValueCSharp name}}Options options)
 {{/if}}
 {
     var request = new HttpRequestMessage();
@@ -143,7 +143,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     using (var client = new HttpClient())
     {
         var rawResponse = await client.SendAsync(request);
-{{#if (eq (name) "getAccessToken")}}
+{{#if (eq (getValue name) "authorizeCustomer")}}
         if (rawResponse.IsSuccessStatusCode || rawResponse.StatusCode == HttpStatusCode.SeeOther)
 {{else}}
         if (rawResponse.IsSuccessStatusCode)
