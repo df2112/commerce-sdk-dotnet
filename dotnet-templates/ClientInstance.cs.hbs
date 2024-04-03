@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Web;
-using CommerceApi.Base;
+using CommerceApiBase;
 
 namespace CommerceApi.{{name.upperCamelCase}};  
 
@@ -64,13 +64,13 @@ namespace CommerceApi.{{name.upperCamelCase}};
 * 
 */
 
-public class {{name.upperCamelCase}}Client : BaseClient 
+public class {{name.upperCamelCase}}Client : CommerceApiClient 
 {
     public const string USER_AGENT_HEADER = "user-agent";
     public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
     public string BASE_URI { get; set; }
 
-    public {{name.upperCamelCase}}Client(ClientConfig config) : base(config)
+    public {{name.upperCamelCase}}Client(CommerceApiClientConfig config) : base(config)
     {
         var pathTemplate = "{{getBaseUriFromDocument model}}";
         var pathReplacements = new Dictionary<string, string>
