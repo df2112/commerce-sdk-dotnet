@@ -95,17 +95,19 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
             query[pair.Key] = pair.Value;
         }
     }
-    
     string queryString = query.ToString();
-
+    {{/if}}        
+{{/each}}
+{{#each request.queryParameters}}
+    {{#if (eq (getValueCSharp name) 'Refine')}}
     if (!string.IsNullOrEmpty(options.Refine))
     {
         queryString += (string.IsNullOrEmpty(queryString) ? "?" : "&") + "refine=" + options.Refine;
     }
-    
-    uriBuilder.Query = queryString;
     {{/if}}
 {{/each}}
+
+    uriBuilder.Query = queryString;
     request.RequestUri = uriBuilder.Uri;
 
     {{!-- (3) HEADER parameters --}}
