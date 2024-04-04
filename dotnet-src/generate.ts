@@ -29,7 +29,7 @@ const skipTestFiles = (src: string): boolean => !/\.test\.[a-z]+$/.test(src);
 //       .then(() => console.log("Generate SDK - FINISH"))
 //   });
 
-setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../../SFCC/CommerceApi`))
+setupApis(API_DIRECTORY, path.resolve(`${__dirname}/../../SFCC2/CommerceApi`))
   .then((apis: generate.ApiMetadata) => {
     console.log("Generate SDK directly in Class LIbrary - START");
     apis.render()
