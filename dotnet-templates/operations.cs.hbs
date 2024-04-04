@@ -81,10 +81,12 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     //
     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
     {{/if}}
+    {{#unless (eq (getValueCSharp name) 'Refine')}}
     if (!string.IsNullOrEmpty(options.{{{getValueCSharp name}}}))
     {
         query["{{{name}}}"] = options.{{{getValueCSharp name}}};
     }
+    {{/unless}}
     {{#if @last}}
     if (options.Custom != null)
     {
@@ -93,7 +95,15 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
             query[pair.Key] = pair.Value;
         }
     }
-    uriBuilder.Query = query.ToString();
+    
+    string queryString = query.ToString();
+
+    if (!string.IsNullOrEmpty(options.Refine))
+    {
+        queryString += (string.IsNullOrEmpty(queryString) ? "?" : "&") + "refine=" + options.Refine;
+    }
+    
+    uriBuilder.Query = queryString;
     {{/if}}
 {{/each}}
     request.RequestUri = uriBuilder.Uri;

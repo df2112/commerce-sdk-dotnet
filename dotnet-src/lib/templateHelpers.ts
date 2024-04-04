@@ -195,7 +195,7 @@ exports.getTypeFromPropertyCSharp = (property) => {
       case "boolean":
         return "bool";
       case "number":
-        return "int";
+        return "double";
       case "object":
         return "Dictionary<string, dynamic>";
       default:
