@@ -64,12 +64,14 @@ namespace CommerceApi.{{name.upperCamelCase}};
 
 public class {{name.upperCamelCase}}Client : CommerceApiClient 
 {
-    public const string USER_AGENT_HEADER = "user-agent";
-    public const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
-    public string BASE_URI { get; set; }
+    private const string USER_AGENT_HEADER = "user-agent";
+    private const string USER_AGENT_VALUE = "commerce-sdk@{{parent.parent.metadata.sdkVersion}}";
+    private string BASE_URI { get; set; }
+    private readonly HttpClient _httpClient;
 
-    public {{name.upperCamelCase}}Client(CommerceApiClientConfig config) : base(config)
+    public {{name.upperCamelCase}}Client(HttpClient httpClient, CommerceApiClientConfig config) : base(config)
     {
+        _httpClient = httpClient;
         var pathTemplate = "{{getBaseUriFromDocument model}}";
         var pathReplacements = new Dictionary<string, string>
         {

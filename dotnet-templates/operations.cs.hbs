@@ -154,29 +154,26 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     //
     // Call the API
     //
-    using (var client = new HttpClient())
-    {
-        var rawResponse = await client.SendAsync(request);
+    var rawResponse = await _httpClient.SendAsync(request);
 {{#if (eq (getValue name) "authorizeCustomer")}}
-        if (rawResponse.IsSuccessStatusCode || rawResponse.StatusCode == HttpStatusCode.SeeOther)
+    if (rawResponse.IsSuccessStatusCode || rawResponse.StatusCode == HttpStatusCode.SeeOther)
 {{else}}
-        if (rawResponse.IsSuccessStatusCode)
+    if (rawResponse.IsSuccessStatusCode)
 {{/if}}
-        {
+    {
 {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'void')}}
-            return rawResponse;
+        return rawResponse;
 {{else}}
-            string content = await rawResponse.Content.ReadAsStringAsync();
-            var jsonSerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
-            {{getReturnTypeFromOperationCSharp this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperationCSharp this}}>(content, jsonSerializerOptions)!;
-            return (typedResponse, rawResponse);
+        string content = await rawResponse.Content.ReadAsStringAsync();
+        var jsonSerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+        {{getReturnTypeFromOperationCSharp this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperationCSharp this}}>(content, jsonSerializerOptions)!;
+        return (typedResponse, rawResponse);
 {{/if}}
-        }
-        else
-        {
-            var errorContent = await rawResponse.Content.ReadAsStringAsync();
-            throw new HttpRequestException($"Request failed with status code {rawResponse.StatusCode}: {errorContent}");
-        }
+    }
+    else
+    {
+        var errorContent = await rawResponse.Content.ReadAsStringAsync();
+        throw new HttpRequestException($"Request failed with status code {rawResponse.StatusCode}: {errorContent}");
     }
 }
   {{/each}}
