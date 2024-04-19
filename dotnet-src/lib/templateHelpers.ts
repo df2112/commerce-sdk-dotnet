@@ -9,6 +9,9 @@ import { commonParameterPositions } from "@commerce-apps/core";
 import { amf, generate } from "@commerce-apps/raml-toolkit";
 import { getResponsesFromPayload, getTypeFromPayload } from "@commerce-apps/raml-toolkit/lib/generate/utils";
 
+const ARRAY_DATA_TYPE = "List";
+const OBJECT_DATA_TYPE = "dynamic";
+
 /**
  * Given an individual type or an array of types in the format Array\<Foo | Baa\>
  * will return either the type prefixed by the namespace, or the Array with each type prefixed
@@ -269,6 +272,50 @@ exports.getReturnTypeFromOperationCSharp = (
   let dataTypesUnique = [...new Set(dataTypes)];
 
   return dataTypesUnique.join(" | ");
+};
+
+/**
+ * Get type of AMF Shape object.
+ *
+ * @param shape - An AMF Shape object
+ *
+ * @returns 'object' if the name property of the Shape is null or 'schema',
+ * Array<T> when request payload is of type array,
+ * name itself otherwise
+ *
+ */
+const getTypeFromShape = (shape) => {
+  const name = shape.name.value();
+  // If shape is a simple array, the name of the array will be 'default'.
+  // In such case we want to return Array<T> with T being the type of the array.
+  // If shape is an array but is defined as a data type definition, it will
+  // have the name of the data type definition. In such case we want to return
+  // the name of the type.
+  if (shape instanceof amf.model.domain.ArrayShape && name === "default") {
+      return ARRAY_DATA_TYPE.concat("<")
+          .concat(shape.items.name.value())
+          .concat(">");
+  }
+  if (!name || name === "schema") {
+      return OBJECT_DATA_TYPE;
+  }
+  return name;
+};
+
+/**
+ * Get payload type from the request.
+ *
+ * @param request - An AMF request
+ *
+ * @returns Type of the request body
+ */
+exports.getPayloadTypeFromRequest = (request) => {
+  var _a;
+  if (((_a = request === null || request === void 0 ? void 0 : request.payloads) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+      const payloadSchema = request.payloads[0].schema;
+      return getTypeFromShape(payloadSchema);
+  }
+  return OBJECT_DATA_TYPE;
 };
 
 /**

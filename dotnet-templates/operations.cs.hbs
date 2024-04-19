@@ -38,7 +38,7 @@ public class {{getValueCSharp name}}Parameters
     {{#or (is method "patch") (is method "post") (is method "put")}}
 
     // BODY parameter
-    public required {{getPayloadTypeFromRequest request}} Body { get; set; }
+    public required {{{getPayloadTypeFromRequest request}}} Body { get; set; }
     {{/or}}
 }
 
