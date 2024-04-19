@@ -133,6 +133,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     // BODY parameter
     //
     {{!-- *      MEDIA TYPE {{getMediaTypeFromRequest request}} --}}
+    {{#if (isRequestWithPayload request)}}
     {{#if (eq (getMediaTypeFromRequest request) "application/json")}}
     request.Content = new StringContent(JsonSerializer.Serialize(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
     {{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
@@ -148,6 +149,7 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     request.Content = new FormUrlEncodedContent(keyValues);
     {{else}}
     throw new Exception("Unsupported media type: {{getMediaTypeFromRequest request}}");
+    {{/if}}
     {{/if}}
 {{/or}}
 
