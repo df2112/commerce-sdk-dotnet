@@ -44,6 +44,10 @@ export function registerPartials(): void {
     path.join(TEMPLATE_DIRECTORY, "dtoPartial.cs.hbs")
   );
   generate.registerPartial(
+    "dtoPartial-array-cs",
+    path.join(TEMPLATE_DIRECTORY, "dtoPartialArray.cs.hbs")
+  );
+  generate.registerPartial(
     "operationsPartial-cs",
     path.join(TEMPLATE_DIRECTORY, "operations.cs.hbs")
   );

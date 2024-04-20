@@ -13,7 +13,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 
-namespace CommerceApi.{{name.upperCamelCase}};  
+{{#if (eq (pascalcase metadata.categories.[CC API Family].[0]) "")}}
+namespace CommerceApi.{{name.upperCamelCase}};
+{{else}}
+namespace CommerceApi.{{pascalcase metadata.categories.[CC API Family].[0]}}.{{name.upperCamelCase}};
+{{/if}}
 
 /**
 * [{{{metadata.name}}}](https://developer.salesforce.com/docs/commerce/commerce-api/references?meta={{{metadata.assetId}}}:Summary)

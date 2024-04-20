@@ -6,15 +6,25 @@
 
 using System.Text.Json.Serialization;
 
-namespace CommerceApi.{{name.upperCamelCase}};  
+{{#if (eq (pascalcase metadata.categories.[CC API Family].[0]) "")}}
+namespace CommerceApi.{{name.upperCamelCase}};
+{{else}}
+namespace CommerceApi.{{pascalcase metadata.categories.[CC API Family].[0]}}.{{name.upperCamelCase}};
+{{/if}}
 {{#each dataTypes}}
 {{!-- TODO: Remove this special case handling once namespaced types are added --}}
 {{#if (eq (getValue name) "ResourceBadRequest")}}
 // This is a known deviation from the RAML definition, required due to limitations in
 // the SDK generation. The full definition will be included in the next major release.
-public Dictionary<string, object> ResourceBadRequest { get; set; }
-{{else if (or (isTypeDefinition this) (isArrayType this))}}
+// public Dictionary<string, object> ResourceBadRequest { get; set; }
+{{else}}
+{{#if (isTypeDefinition this)}}
 {{> dtoPartial-cs typeDto=this}}
+{{else}}
+{{#if (isArrayType this)}}
+{{> dtoPartial-array-cs typeDto=this}}
+{{/if}}
+{{/if}}
 {{/if}}
 {{#if (isTraitDefinition this)}}
 {{#if (isAllowedTrait this) }}

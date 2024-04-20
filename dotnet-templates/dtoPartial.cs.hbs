@@ -4,18 +4,22 @@
 // templates/dtoPartial.*.hbs
 //
 // *****************************************************************************************
-{{#if (isArrayType typeDto)}}
-{{{getDataType typeDto}}};
-{{else}}
 public class {{getValue typeDto.name}}
 {
 {{#each (getProperties typeDto)}}
     [JsonPropertyName("{{{getValue name}}}")]
-    {{#or (eq (getTypeFromPropertyCSharp this) "object")}}{{> dtoPartial-cs typeDto=range }}{{else}}public {{{getTypeFromPropertyCSharp this}}}?{{/or}} {{{getValueCSharp name}}} { get; set; } 
+    {{#if (eq (getTypeFromPropertyCSharp this) "object")}}
+    {{> dtoPartial-cs typeDto=range }}
+    {{else}}
+    {{#if (eq (getValue ../typeDto.name) (getValueCSharp name))}}
+    public {{{getTypeFromPropertyCSharp this}}}? _{{{getValueCSharp name}}} { get; set; }
+    {{else}}
+    public {{{getTypeFromPropertyCSharp this}}}? {{{getValueCSharp name}}} { get; set; }
+    {{/if}}
+    {{/if}}
 
 {{/each}}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
     public Dictionary<string, dynamic>? AdditionalProperties { get; init; }
 {{/if}}
 }
-{{/if}}

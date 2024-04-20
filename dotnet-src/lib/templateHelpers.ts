@@ -206,6 +206,15 @@ exports.getTypeFromPropertyCSharp = (property) => {
     }
   }
 };
+exports.isPropertyArrayTypeCSharp = (property) => {
+  const returnType = generate.handlebarsAmfHelpers.getTypeFromProperty(property);
+
+  if (returnType.startsWith("Array<") && returnType.endsWith(">")) {
+    return "true";
+  } else {
+    return "false";
+  }
+};
 
 /**
  * Get value from an AMF field.
@@ -284,7 +293,7 @@ exports.getReturnTypeFromOperationCSharp = (
  * name itself otherwise
  *
  */
-const getTypeFromShape = (shape) => {
+exports.getTypeFromShape = (shape) => {
   const name = shape.name.value();
   // If shape is a simple array, the name of the array will be 'default'.
   // In such case we want to return Array<T> with T being the type of the array.
@@ -313,7 +322,7 @@ exports.getPayloadTypeFromRequest = (request) => {
   var _a;
   if (((_a = request === null || request === void 0 ? void 0 : request.payloads) === null || _a === void 0 ? void 0 : _a.length) > 0) {
       const payloadSchema = request.payloads[0].schema;
-      return getTypeFromShape(payloadSchema);
+      return exports.getTypeFromShape(payloadSchema);
   }
   return OBJECT_DATA_TYPE;
 };
@@ -336,4 +345,14 @@ exports.getBaseUriVariablesFromDocument = (property: amf.model.document.BaseUnit
   }
 
   return "";
+};
+
+exports.getArrayDataTypeCSharp = (arrayShape) => {
+  let arrItem = arrayShape.items;
+  if (arrItem == null) {
+      if (arrayShape.inherits != null && arrayShape.inherits.length > 0) {
+          arrItem = arrayShape.inherits[0].items;
+      }
+  }
+  return ARRAY_DATA_TYPE.concat("<").concat("dynamic").concat(">");
 };
