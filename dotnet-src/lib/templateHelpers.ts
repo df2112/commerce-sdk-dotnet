@@ -356,3 +356,39 @@ exports.getArrayDataTypeCSharp = (arrayShape) => {
   }
   return ARRAY_DATA_TYPE.concat("<").concat("dynamic").concat(">");
 };
+
+// DAVE TODO: This is a hack. Need to get correct version number directly from main .RAML file
+exports.getApiVersion = (metadataVersion: string) => {
+  if (metadataVersion && metadataVersion.length > 0 && metadataVersion.charAt(0) !== '0') {
+    return 'v' + metadataVersion.charAt(0);
+  }
+  return 'v1';
+};
+
+exports.getSerializerTypeFromShape = (shape) => {
+  const name = shape.name.value();
+
+  if (shape instanceof amf.model.domain.ArrayShape && name === "default") {
+      return shape.items.name.value();
+  }
+  if (!name || name === "schema") {
+      return OBJECT_DATA_TYPE;
+  }
+  return name;
+};
+
+/**
+ * Get payload type from the request.
+ *
+ * @param request - An AMF request
+ *
+ * @returns Type of the request body
+ */
+exports.getSerializerPayloadTypeFromRequest = (request) => {
+  var _a;
+  if (((_a = request === null || request === void 0 ? void 0 : request.payloads) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+      const payloadSchema = request.payloads[0].schema;
+      return exports.getSerializerTypeFromShape(payloadSchema);
+  }
+  return OBJECT_DATA_TYPE;
+};

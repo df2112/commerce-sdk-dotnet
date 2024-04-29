@@ -80,7 +80,7 @@ public class {{name.upperCamelCase}}Client : CommerceApiClient
         var pathReplacements = new Dictionary<string, string>
         {
             { "shortCode", config.ShortCode },
-            { "version", config.Version }
+            { "version", "{{getApiVersion metadata.version}}" }
         };
         BASE_URI = MapStringToProperty().Replace(pathTemplate, m => pathReplacements[m.Groups[1].Value]);
     }

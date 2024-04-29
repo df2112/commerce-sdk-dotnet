@@ -22,4 +22,11 @@ public class {{getValue typeDto.name}}
 {{~#if (isAdditionalPropertiesAllowed typeDto)}}
     public Dictionary<string, dynamic>? AdditionalProperties { get; init; }
 {{/if}}
+
+    public static readonly JsonSerializerOptions JsonSerializerOptions = new ()
+    {
+        Converters = { new CommerceApiJsonConverter<{{getValue typeDto.name}}>() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true
+    };
 }

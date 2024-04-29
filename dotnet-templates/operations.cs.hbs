@@ -135,7 +135,10 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
     {{!-- *      MEDIA TYPE {{getMediaTypeFromRequest request}} --}}
     {{#if (isRequestWithPayload request)}}
     {{#if (eq (getMediaTypeFromRequest request) "application/json")}}
-    request.Content = new StringContent(JsonSerializer.Serialize(options.Body), Encoding.UTF8, MediaTypeNames.Application.Json);
+    var serializedBody = JsonSerializer.Serialize(options.Body, {{{getSerializerPayloadTypeFromRequest request}}}.JsonSerializerOptions);
+    var stringContent = new StringContent(serializedBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+    request.Content = stringContent;
+
     {{else if (eq (getMediaTypeFromRequest request)  "application/x-www-form-urlencoded")}}
     var keyValues = new List<KeyValuePair<string, string>>();
     foreach (var prop in typeof({{getPayloadTypeFromRequest request}}).GetProperties())
@@ -167,7 +170,11 @@ public async Task<({{getReturnTypeFromOperationCSharp this}} typedResponse, Http
         return rawResponse;
 {{else}}
         string content = await rawResponse.Content.ReadAsStringAsync();
+        {{#if (equalsCSharp (getReturnTypeFromOperationCSharp this) 'Object')}}
         var jsonSerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+        {{else}}
+        var jsonSerializerOptions = {{getReturnTypeFromOperationCSharp this}}.JsonSerializerOptions;
+        {{/if}}
         {{getReturnTypeFromOperationCSharp this}} typedResponse = JsonSerializer.Deserialize<{{getReturnTypeFromOperationCSharp this}}>(content, jsonSerializerOptions)!;
         return (typedResponse, rawResponse);
 {{/if}}

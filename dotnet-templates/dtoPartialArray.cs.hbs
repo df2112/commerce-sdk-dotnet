@@ -7,4 +7,12 @@
 public class {{getValue typeDto.name}}
 {
     List<string> Items { get; set; }
+
+    public static readonly JsonSerializerOptions JsonSerializerOptions = new ()
+    {
+        Converters = { new CommerceApiJsonConverter<{{getValue typeDto.name}}>() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true
+    };
+
 }
